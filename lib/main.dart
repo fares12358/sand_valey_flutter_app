@@ -1,9 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
+import 'providers/user_provider.dart';
 import 'package:sand_valley/routes/app_routes.dart';
-import 'package:sand_valley/screens/splash/splash_screen.dart';
+// import 'package:flutter_native_splash/flutter_native_splash.dart';
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Remove splash screen AFTER your async logic
+  // await Future.delayed(const Duration(milliseconds: 500)); // simulate delay
+  // FlutterNativeSplash.remove(); // 👈 this line
+  // Create secure storage instance
+  const FlutterSecureStorage secureStorage = FlutterSecureStorage();
 
-void main() {
-  runApp(const SandValleyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        Provider<FlutterSecureStorage>.value(value: secureStorage), // Make it available globally
+      ],
+      child: const SandValleyApp(),
+    ),
+  );
 }
 
 class SandValleyApp extends StatelessWidget {
@@ -24,7 +42,7 @@ class SandValleyApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.white,
         primaryColor: const Color(0xFFF7941D),
         highlightColor: const Color(0xFFF7941D),
-        splashColor: const Color(0xFFF7941D).withOpacity(0.1),
+        splashColor: const Color(0xFFF7941D),
         textSelectionTheme: const TextSelectionThemeData(
           cursorColor: Color(0xFFF7941D),
           selectionColor: Color(0xFFFFD8B0),

@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:sand_valley/screens/splash/splash_screen.dart';
 import 'package:sand_valley/screens/home/home_screen.dart';
-import 'package:sand_valley/screens/admin/admin_login_screen.dart';
 
+//admin
+import 'package:sand_valley/screens/admin/admin_page.dart';
+import 'package:sand_valley/screens/admin/master_admin_page.dart';
+import 'package:sand_valley/screens/admin/admin_login_screen.dart';
+import '../screens/admin/forgot_password_screen.dart';
+import 'package:sand_valley/screens/admin/otp_screen.dart';
+import 'package:sand_valley/screens/admin/reset_password_screen.dart';
 // Communicate
 import 'package:sand_valley/screens/Communicate/Communicate-main.dart';
 import 'package:sand_valley/screens/Communicate/Communicate-eng.dart';
@@ -24,12 +30,19 @@ import 'package:sand_valley/screens/seeds/seed-main.dart';
 import 'package:sand_valley/screens/seeds/seed-type.dart';
 import 'package:sand_valley/screens/seeds/seed-description.dart';
 
+
 class AppRoutes {
   static Map<String, WidgetBuilder> routes = {
     '/': (context) => const SplashScreen(),
     '/home': (context) => const HomeScreen(),
+    
+    //admin
     '/admin-login': (context) => const AdminLoginScreen(),
-
+    '/admin-master': (context) => const MasterAdminPage(),
+    '/admin': (context) => const AdminPage(),
+    '/admin-forgot-password': (context) => const ForgotPasswordScreen(),
+    '/otp': (context) => const OtpScreen(),
+    '/reset-password': (context) => const ResetPasswordScreen(),
     // Communicate
     '/communicate-main': (context) => const CommunicateMainPage(),
     '/communicate-eng': (context) => const CommunicateEngPage(),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -8,12 +9,31 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 3), () {
+    _checkLogin();
+  }
+
+  Future<void> _checkLogin() async {
+    await Future.delayed(const Duration(seconds: 2)); // optional loading time
+
+    final token = await _secureStorage.read(key: 'token');
+    final role = await _secureStorage.read(key: 'role');
+
+    if (token != null && role != null) {
+      if (role == 'admin') {
+        Navigator.pushReplacementNamed(context, '/admin-master');
+      } else if (role == 'user') {
+        Navigator.pushReplacementNamed(context, '/admin');
+      } else {
+        Navigator.pushReplacementNamed(context, '/home');
+      }
+    } else {
       Navigator.pushReplacementNamed(context, '/home');
-    });
+    }
   }
 
   @override
@@ -22,19 +42,9 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Background image
-          Image.asset(
-            'assets/images/bg-main-screen.png',
-            fit: BoxFit.cover,
-          ),
-
-          // Logo centered
+          Image.asset('assets/images/bg-main-screen.png', fit: BoxFit.cover),
           Center(
-            child: Image.asset(
-              'assets/images/logo.png',
-              width: 180,
-              height: 180,
-            ),
+            child: Image.asset('assets/images/logo.png', width: 180, height: 180),
           ),
         ],
       ),
