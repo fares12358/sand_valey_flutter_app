@@ -1,27 +1,44 @@
 # 🏜️ Sand Valley App
 
-Sand Valley is a Flutter-based mobile application designed to manage and display agricultural resources—fertilizers, insecticides, seeds—and provide communication options. It features a secure, role‑based admin login system (admin & master), OTP‑based password reset, beautiful desert‑themed UI, and modular, maintainable routing.
+**Sand Valley** is a Flutter-based mobile application built to manage and display agricultural resources—fertilizers, insecticides, seeds—and provide direct communication options. It features:
+
+- 🔐 Secure, role-based admin login system (`admin` & `master`)
+- 🔄 OTP-based password reset
+- 🌵 Beautiful desert-themed UI
+- 🧩 Modular routing structure for easy maintenance
+
+---
+
+## 📦 Version `v1.0.3` Updates
+
+- ✅ **Master Admin Dashboard UI improvements**
+  - Added **4 new navigation buttons**:
+    - `Users`, `Admins`, `Logs`, `Settings`
+    - Each button routes to a matching named route (e.g., `/users`)
+- ✅ Buttons are styled to match the app’s orange theme
+- ✅ Enhanced code structure using keys & callback to refresh users list
+- ✅ Better separation of widget logic for cleaner state management
 
 ---
 
 ## 📂 Project Structure
 
-lib/ <br>
-├── main.dart # App entry point (with Provider & Secure Storage setup)<br>
+lib/<br>
+├── main.dart # App entry point with Provider & SecureStorage<br>
 ├── routes/<br>
-│ └── app_routes.dart # All named routes<br>
+│ └── app_routes.dart # All named route paths<br>
 ├── screens/<br>
 │ ├── splash/<br>
-│ │ └── splash_screen.dart # Native + in‑app splash<br>
+│ │ └── splash_screen.dart<br>
 │ ├── home/<br>
-│ │ └── home_screen.dart # Landing + auto‑login check<br>
+│ │ └── home_screen.dart<br>
 │ ├── admin/<br>
-│ │ ├── admin_login_screen.dart # Email/password with secure storage<br>
-│ │ ├── admin_page.dart # Admin dashboard<br>
-│ │ ├── master_admin_page.dart # Master admin dashboard<br>
-│ │ ├── forgot_password_screen.dart # Enter email/username → send OTP<br>
-│ │ ├── otp_screen.dart # 6‑digit OTP input + resend + timer<br>
-│ │ └── reset_password_screen.dart # Enter new password + confirm<br>
+│ │ ├── admin_login_screen.dart<br>
+│ │ ├── admin_page.dart<br>
+│ │ ├── master_admin_page.dart # 🆕 Updated with 4 routing buttons<br>
+│ │ ├── forgot_password_screen.dart<br>
+│ │ ├── otp_screen.dart<br>
+│ │ └── reset_password_screen.dart<br>
 │ ├── Communicate/<br>
 │ │ ├── communicate_main.dart<br>
 │ │ ├── communicate_eng.dart<br>
@@ -39,8 +56,13 @@ lib/ <br>
 │ ├── seed_main.dart<br>
 │ ├── seed_type.dart<br>
 │ └── seed_description.dart<br>
+├── components/<br>
+│ ├── account_settings_section.dart<br>
+│ ├── add_account_section.dart<br>
+│ └── view_users_section.dart<br>
 └── widgets/<br>
-└── background_container.dart # Reusable background + theme<br>
+└── background_container.dart # Reusable background container + theme<br>
+
 
 ---
 
@@ -48,73 +70,79 @@ lib/ <br>
 
 ### 🔐 Secure Admin Login
 
-- **Email & Password** against Node.js API
-- **Role‑based** navigation:
-  - `master` → Master Admin Dashboard
-  - `admin` → Admin Dashboard
-- **SecureStorage** for token & user info
-- **Password Visibility** toggle & form validation
+- Email/password authentication via secure Node.js backend
+- `admin` → Admin Dashboard
+- `master` → Master Admin Dashboard (with advanced controls)
+- SecureStorage for tokens and role
+- Password visibility toggle and form validation
 
-### 🔁 Forgot Password & OTP
+### 🔁 OTP-Based Password Reset
 
-- **Forgot Password** screen: enter email/username → backend sends OTP
-- **OTP Verification** screen:
-  - 6‑digit inputs with auto‑focus
-  - “Resend Code?” button with 1‑minute cooldown & loading spinner
-  - Error messages & colored snackbars
-- **Reset Password** screen: enter new & confirm password → API call
+- Enter email/username → API sends OTP
+- OTP screen with:
+  - 6-digit smart input
+  - Resend button with loading and 60s cooldown
+- Reset password securely with validation
 
-### 📱 UI / UX
+### 📱 UI & UX Design
 
-- **Desert‑themed** background images & custom splash
-- **Primary Color:** Orange `#F7941D`
-- **Font:** Poppins
-- **Material 3** styling, elevated buttons, consistent theming
+- Orange theme: `#F7941D`
+- Poppins font
+- Material 3 widgets and styling
+- Responsive and clean layout
+- Reusable background containers
 
 ### 📦 Modular Screens
 
-- **Seeds**, **Fertilizer**, **Insecticide**, **Communicate** modules
-- Each with Main, Type, Description pages
+- Communicate: phone and text support
+- Fertilizer, Insecticide, Seeds: type + description
+- Dashboard components separated for reusability
 
 ---
 
-## 📋 Dependencies
+## 🔧 Dependencies
 
 dependencies:
-flutter:
-sdk: flutter
-provider: ^6.0.5
-flutter_secure_storage: ^8.0.0
-http: ^0.13.6
+  flutter:
+    sdk: flutter
+  provider: ^6.0.5
+  flutter_secure_storage: ^8.0.0
+  http: ^0.13.6
 
-# plus any UI or utility packages you use
 
-🛠️ Setup & Usage<br>
+## 🛠️ Setup & Usage
 
-Clone the repo<br>
+# Clone the repository
+git clone https://github.com/your-username/sand-valley.git
+cd sand-valley
 
-Run flutter pub get<br>
+# Get packages
+flutter pub get
 
-Configure your backend URL in:<br>
+# Update your backend URLs in:
+# - admin_login_screen.dart
+# - forgot_password_screen.dart
+# - otp_screen.dart
+# - reset_password_screen.dart
 
-admin_login_screen.dart<br>
+# Run on device or emulator
+flutter run
 
-forgot_password_screen.dart<br>
+## 🚀 Git Versioning
 
-otp_screen.dart<br>
+# Commit your changes
+git add .
+git commit -m "Update Master Admin Page with 4 new routing buttons"
 
-reset_password_screen.dart<br>
+# Push to origin main branch
+git push origin main
 
-Launch on device/emulator:<br>
-
-flutter run<br>
-
-git tag v1.0.1
-git push origin v1.0.1
-
+# Tag the new version
+git tag v1.0.3
+git push origin v1.0.3
 
 👨‍💻 Author
 Fares Mohamed
 Frontend & Backend Developer (MERN | Flutter | Node.js)
-Email: fares.dev.m@gmail.com
-GitHub: fares12358
+📧 fares.dev.m@gmail.com
+🔗 GitHub: fares12358

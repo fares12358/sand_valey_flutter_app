@@ -4,26 +4,17 @@ import 'package:sand_valley/widgets/background_container.dart';
 import 'package:sand_valley/widgets/customWidget.dart';
 import 'package:sand_valley/widgets/customWidgetReversed.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class Test extends StatelessWidget {
+  const Test({super.key});
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
+  static final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
-class _HomeScreenState extends State<HomeScreen> {
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
-
-  Future<void> _handleAdminTap() async {
+  Future<void> _handleAdminTap(BuildContext context) async {
     final role = await _secureStorage.read(key: 'role');
-    if (role != null) {
-      if (role == 'admin') {
-        Navigator.pushNamed(context, '/admin-master');
-      } else if (role == 'user') {
-        Navigator.pushNamed(context, '/admin');
-      } else {
-        Navigator.pushNamed(context, '/admin-login');
-      }
+    if (role == 'admin') {
+      Navigator.pushNamed(context, '/admin-master');
+    } else if (role == 'user') {
+      Navigator.pushNamed(context, '/admin');
     } else {
       Navigator.pushNamed(context, '/admin-login');
     }
@@ -31,8 +22,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       body: BackgroundContainer(
@@ -52,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: customLayout(
                           image: "assets/images/seeds-img.png",
                           text: "بذور",
-                          routeName: '/seed-main',
+                          routeName: '/testTwo',
                         ),
                       ),
                     ],
@@ -69,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: customLayoutReversed(
                           image: "assets/images/seeds-img.png",
                           text: "اسمده",
-                          routeName: '/fertilizer-main',
+                          routeName: '/testTwo',
                         ),
                       ),
                     ],
@@ -86,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: customLayout(
                           image: "assets/images/seeds-img.png",
                           text: "مبيدات",
-                          routeName: '/insecticide-main',
+                          routeName: '/testTwo',
                         ),
                       ),
                     ],
@@ -103,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: customLayoutReversed(
                           image: "assets/images/seeds-img.png",
                           text: "تواصل معنا",
-                          routeName: '/communicate-main',
+                          routeName: '/testTwo',
                         ),
                       ),
                     ],
@@ -113,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: TextButton(
-                  onPressed: _handleAdminTap,
+                  onPressed: () => _handleAdminTap(context),
                   child: const Text(
                     'Admin Login',
                     style: TextStyle(

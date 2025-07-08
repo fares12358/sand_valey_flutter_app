@@ -50,6 +50,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
 
           // Store login details securely
           await _secureStorage.write(key: 'token', value: user['token']);
+          await _secureStorage.write(key: 'name', value: user['name']);
           await _secureStorage.write(key: 'username', value: user['username']);
           await _secureStorage.write(key: 'email', value: user['email']);
           await _secureStorage.write(key: 'id', value: user['id']);

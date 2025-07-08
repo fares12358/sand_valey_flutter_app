@@ -73,6 +73,11 @@ class SandValleyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: AppRoutes.routes,
+      // builder: (context, child) {
+      //   return SafeArea(
+      //     child: child ?? const SizedBox(),
+      //   );
+      // },
     );
   }
 }
