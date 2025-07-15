@@ -14,7 +14,7 @@ class RoundedContainer extends StatelessWidget {
 Widget roundedContainer(String image) {
   return Container(
     width: 400,
-    height: 110,
+    height: 90,
     decoration: BoxDecoration(
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(70),
@@ -24,14 +24,14 @@ Widget roundedContainer(String image) {
         BoxShadow(
           color: Colors.black.withOpacity(0.3),
           blurRadius: 10,
-          offset: const Offset(0, -4), 
+          offset: const Offset(0, -4),
         ),
       ],
     ),
     child: ClipRRect(
       borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(70),
-        topRight: Radius.circular(70),
+        topLeft: Radius.circular(38),
+        topRight: Radius.circular(38),
       ),
       child: Image.asset(
         image,

@@ -284,7 +284,8 @@ class _UserDetailPageState extends State<UserDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("User Detail", style: TextStyle(color: Colors.white)),
+        title: const Text("User Detail", style: TextStyle(color: Colors.white, fontSize: 22,
+            fontWeight: FontWeight.bold,)),
         backgroundColor: const Color(0xFFF7941D),
         iconTheme: const IconThemeData(color: Colors.white),
       ),

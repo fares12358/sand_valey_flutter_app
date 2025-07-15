@@ -11,6 +11,32 @@ class AdminPage extends StatelessWidget {
     Navigator.pushReplacementNamed(context, '/home');
   }
 
+  Widget _buildNavButton(BuildContext context, String title, String route) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/${route.toLowerCase()}');
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFFF7941D),
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        child: Text(
+          title,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,11 +90,19 @@ class AdminPage extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AccountSettingsSection(),
-                    SizedBox(height: 30),
+                    _buildNavButton(context, 'Seeds', 'seed-main-admin'),
+                    const SizedBox(height: 12),
+                    _buildNavButton(context, 'Fertilizer', 'fertilizer-admin'),
+                    const SizedBox(height: 12),
+                    _buildNavButton(context, 'Insecticide', 'insecticide-admin'),
+                    const SizedBox(height: 12),
+                    _buildNavButton(context, 'Communicate', 'communicate-admin'),
+                    const SizedBox(height: 30),
+                    const AccountSettingsSection(),
+                    const SizedBox(height: 30),
                   ],
                 ),
               ),

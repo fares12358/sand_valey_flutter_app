@@ -104,9 +104,8 @@ class _MasterAdminPageState extends State<MasterAdminPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
-
-                    _buildNavButton('Seeds','seed-admin'),
+                    // btns
+                    _buildNavButton('Seeds','seed-main-admin'),
                     const SizedBox(height: 12),
                     _buildNavButton('Fertilizer','fertilizer-admin'),
                     const SizedBox(height: 12),
@@ -114,7 +113,7 @@ class _MasterAdminPageState extends State<MasterAdminPage> {
                     const SizedBox(height: 12),
                     _buildNavButton('Comunicate','communicate-admin'),
                     const SizedBox(height: 30),
-
+                    // components
                     const AccountSettingsSection(),
                     const SizedBox(height: 30),
                     AddAccountSection(onUserAdded: _refreshUsers),

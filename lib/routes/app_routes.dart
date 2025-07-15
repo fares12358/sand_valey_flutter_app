@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:sand_valley/screens/home/test.dart';
+import 'package:sand_valley/screens/admin/pages/seed-admin.dart';
+import 'package:sand_valley/screens/admin/pages/seed-type.dart';
+import 'package:sand_valley/screens/admin/pages/seed.description.dart';
 import 'package:sand_valley/screens/splash/splash_screen.dart';
 import 'package:sand_valley/screens/home/home_screen.dart';
 
@@ -36,7 +38,6 @@ class AppRoutes {
   static Map<String, WidgetBuilder> routes = {
     '/': (context) => const SplashScreen(),
     '/home': (context) => const HomeScreen(),
-    // '/home': (context) => const Test(),
     
     //admin
     '/admin-login': (context) => const AdminLoginScreen(),
@@ -45,11 +46,18 @@ class AppRoutes {
     '/admin-forgot-password': (context) => const ForgotPasswordScreen(),
     '/otp': (context) => const OtpScreen(),
     '/reset-password': (context) => const ResetPasswordScreen(),
+
+    //data entry
+    '/seed-main-admin': (context) => const SeedAdminPage(),
+    '/seed-type-admin': (context) => const SeedTypeAdminPage(),
+    '/seed-description-admin': (context) => const SeedDescriptionAdminPage(),
+    
+    //
     
     // Communicate
-    '/communicate-main': (context) => const CommunicateMainPage(),
-    '/communicate-eng': (context) => const CommunicateEngPage(),
-    '/communicate-call': (context) => const CommunicateCallPage(),
+    '/communicate-main': (context) => const CommunicationPage(),
+    '/communicate-eng': (context) => const EngineerPage(),
+    '/communicate-call': (context) => const CallPage(),
 
     // Fertilizer
     '/fertilizer-main': (context) => const FertilizerMainPage(),
@@ -64,7 +72,7 @@ class AppRoutes {
 
     // Seeds
     '/seed-main': (context) => const SeedMainPage(),
-    '/seed-type': (context) => const SeedTypePage(),
+    '/seed-type': (context) => const SeedType(),
     '/seed-description': (context) => const SeedDescriptionPage(),
   };
 }
