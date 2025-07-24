@@ -40,6 +40,8 @@ Widget circularBoxReversed(
 ) {
   double deviceWidth = MediaQuery.of(context).size.width;
 
+  final isNetworkImage = image.toLowerCase().startsWith('http');
+
   return SizedBox(
     width: deviceWidth * 0.8,
     child: Stack(
@@ -84,7 +86,9 @@ Widget circularBoxReversed(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 image: DecorationImage(
-                  image: AssetImage(image),
+                  image: isNetworkImage
+                      ? NetworkImage(image)
+                      : AssetImage(image) as ImageProvider,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -103,13 +107,13 @@ Widget roundedRectangle(String text, BuildContext context) {
 
       double targetWidth;
       if (screenWidth < 400) {
-        targetWidth = screenWidth * 0.65; // small phones
+        targetWidth = screenWidth * 0.65;
       } else if (screenWidth < 600) {
-        targetWidth = screenWidth * 0.70; // medium screens like 425
+        targetWidth = screenWidth * 0.70;
       } else if (screenWidth >= 700 && screenWidth <= 900) {
-        targetWidth = screenWidth * 0.50; // large tablets
+        targetWidth = screenWidth * 0.50;
       } else {
-        targetWidth = screenWidth * 0.40; // large tablets
+        targetWidth = screenWidth * 0.40;
       }
 
       return Align(

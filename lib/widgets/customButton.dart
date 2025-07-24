@@ -26,7 +26,7 @@ class CustomButton extends StatelessWidget {
       child: IconButton(
         onPressed: () {
           if (routeName != null) {
-            Navigator.pushNamed(context, routeName!);
+            Navigator.pop(context, routeName!);
           }
         },
         icon: icon,

@@ -8,9 +8,11 @@ class customLayout extends StatelessWidget {
     required this.image,
     required this.routeName,
   });
+
   final String routeName;
   final String image;
   final String text;
+
   @override
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
@@ -37,6 +39,8 @@ Widget circularBox(
   String routeName,
 ) {
   double deviceWidth = MediaQuery.of(context).size.width;
+  final bool isNetworkImage = image.toLowerCase().startsWith('http');
+
   return InkWell(
     onTap: () {
       Navigator.pushNamed(context, routeName);
@@ -45,14 +49,18 @@ Widget circularBox(
       width: deviceWidth * 0.8,
       child: Stack(
         children: [
-          Positioned(left: 50, top: 55, child: roundedRectangle(text, context)),
+          Positioned(
+            left: 50,
+            top: 55,
+            child: roundedRectangle(text, context),
+          ),
           Positioned(
             left: 3,
             top: 2,
             child: Container(
               width: 110,
               height: 110,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 color: Color(0xffFFA927),
               ),
@@ -67,7 +75,9 @@ Widget circularBox(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 image: DecorationImage(
-                  image: AssetImage(image),
+                  image: isNetworkImage
+                      ? NetworkImage(image)
+                      : AssetImage(image) as ImageProvider,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -84,14 +94,15 @@ Widget roundedRectangle(String text, BuildContext context) {
     builder: (context, constraints) {
       double screenWidth = MediaQuery.of(context).size.width;
       double targetWidth;
+
       if (screenWidth < 400) {
-        targetWidth = screenWidth * 0.65; // small phones
+        targetWidth = screenWidth * 0.65;
       } else if (screenWidth < 600) {
-        targetWidth = screenWidth * 0.70; // medium screens like 425
+        targetWidth = screenWidth * 0.70;
       } else if (screenWidth >= 700 && screenWidth <= 900) {
-        targetWidth = screenWidth * 0.50; // large tablets
+        targetWidth = screenWidth * 0.50;
       } else {
-        targetWidth = screenWidth * 0.40; // large tablets
+        targetWidth = screenWidth * 0.40;
       }
 
       return Align(

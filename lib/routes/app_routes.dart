@@ -1,4 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:sand_valley/screens/admin/pages/CommunicationEngPage.dart';
+import 'package:sand_valley/screens/admin/pages/FertilizerNestedTypePage.dart';
+import 'package:sand_valley/screens/admin/pages/FertilizerTypeAdminPage.dart';
+import 'package:sand_valley/screens/admin/pages/communication-admin.dart';
+import 'package:sand_valley/screens/admin/pages/fertilizer_main.dart';
+import 'package:sand_valley/screens/admin/pages/insecticide-admin.dart';
+import 'package:sand_valley/screens/admin/pages/insecticide_type_page.dart';
 import 'package:sand_valley/screens/admin/pages/seed-admin.dart';
 import 'package:sand_valley/screens/admin/pages/seed-type.dart';
 import 'package:sand_valley/screens/admin/pages/seed.description.dart';
@@ -38,7 +45,7 @@ class AppRoutes {
   static Map<String, WidgetBuilder> routes = {
     '/': (context) => const SplashScreen(),
     '/home': (context) => const HomeScreen(),
-    
+
     //admin
     '/admin-login': (context) => const AdminLoginScreen(),
     '/admin-master': (context) => const MasterAdminPage(),
@@ -48,12 +55,22 @@ class AppRoutes {
     '/reset-password': (context) => const ResetPasswordScreen(),
 
     //data entry
+    //seed
     '/seed-main-admin': (context) => const SeedAdminPage(),
     '/seed-type-admin': (context) => const SeedTypeAdminPage(),
     '/seed-description-admin': (context) => const SeedDescriptionAdminPage(),
-    
-    //
-    
+    //communication
+    '/communicate-admin': (context) => const CommunicationAdminPage(),
+    '/communicate-eng-admin': (context) => const CommunicationEngPage(),
+    //insecticide
+    '/insecticide-admin': (context) => const InsecticideAdmin(),
+    '/insecticide-type-admin': (context) => const InsecticideTypeAdminPage(),
+    //fertilizers
+    '/fertilizer-admin': (context) => const FertilizerAdminPage(),
+    '/fertilizer-type': (context) => const FertilizerTypeAdminPage(),
+    '/fertilizer-nestedType': (context) => const FertilizerNestedTypePage(),
+
+
     // Communicate
     '/communicate-main': (context) => const CommunicationPage(),
     '/communicate-eng': (context) => const EngineerPage(),
@@ -67,7 +84,7 @@ class AppRoutes {
 
     // Insecticide
     '/insecticide-main': (context) => const InsecticideMainPage(),
-    '/insecticide-type': (context) => const InsecticideTypePage(),
+    '/insecticide-type': (context) => InsecticideTypePage(),
     '/insecticide-description': (context) => const InsecticideDescriptionPage(),
 
     // Seeds

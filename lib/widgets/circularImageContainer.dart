@@ -20,7 +20,7 @@ Widget circularContainer(String image) {
     decoration: BoxDecoration(
       shape: BoxShape.circle,
       border: Border.all(
-        color: const Color(0xffFFA927),
+        color: const Color(0xff00793F),
         width: 5,
       ),
     ),

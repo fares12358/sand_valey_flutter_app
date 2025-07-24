@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 
 class Descriptioncontainer extends StatelessWidget {
-  const Descriptioncontainer({super.key, required this.text});
+  const Descriptioncontainer({
+    super.key,
+    required this.text,
+    required this.color,
+    required this.borderColor,
+  });
 
   final String text;
+  final Color color;
+  final Color borderColor;
 
   @override
   Widget build(BuildContext context) {
@@ -30,14 +37,14 @@ class Descriptioncontainer extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(20),
             width: targetWidth,
-            height: 350, // Fixed height to enable scroll
+            height: 350,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: const Color(0xFF3B970C), width: 2),
-              color: Colors.white,
+              border: Border.all(color: borderColor, width: 2),
+              color: color,
             ),
             child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(), // Optional smooth scroll
+              physics: const BouncingScrollPhysics(),
               child: Text(
                 text,
                 style: const TextStyle(

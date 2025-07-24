@@ -6,7 +6,7 @@ class CustomWidget2Reversed extends StatelessWidget {
   final String image; // Can be a URL or asset path
   final String routeName;
   final Color customColor;
-  final Color? customBorderColor;
+  final Color customBorderColor;
   final Map<String, dynamic>? arguments;
 
   const CustomWidget2Reversed({
@@ -51,7 +51,7 @@ class CustomWidget2Reversed extends StatelessWidget {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: const Color(0xFF3B970C),
+                            color: customBorderColor,
                             width: 3,
                           ),
                         ),
@@ -123,9 +123,8 @@ class CustomWidget2Reversed extends StatelessWidget {
               ),
               child: AutoSizeText(
                 text,
-                style: const TextStyle(color: Colors.white, fontSize: 25),
-                maxLines: 2,
-                minFontSize: 16,
+                style: const TextStyle(color: Colors.white, fontSize: 17),
+                maxLines: 3,
                 stepGranularity: 1,
                 textAlign: TextAlign.center,
                 textDirection: TextDirection.rtl,

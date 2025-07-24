@@ -1,6 +1,7 @@
-import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 
 class AddSeedsTypeSection extends StatefulWidget {
   final String categoryId; // 👈 Parent category ID
@@ -18,13 +19,19 @@ class AddSeedsTypeSection extends StatefulWidget {
 
 class _AddSeedsTypeSectionState extends State<AddSeedsTypeSection> {
   final TextEditingController _nameController = TextEditingController();
+  File? _pickedImage;
   bool _isLoading = false;
   String? _error;
 
+  Future<void> _pickImage() async {
+    final img = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (img != null) setState(() => _pickedImage = File(img.path));
+  }
+
   Future<void> _save() async {
     final name = _nameController.text.trim();
-    if (name.isEmpty) {
-      setState(() => _error = 'Subcategory name is required.');
+    if (name.isEmpty || _pickedImage == null) {
+      setState(() => _error = 'Subcategory name and image are required.');
       return;
     }
 
@@ -34,21 +41,19 @@ class _AddSeedsTypeSectionState extends State<AddSeedsTypeSection> {
     });
 
     try {
-      final uri = Uri.parse(
-        'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/add-seeds-type',
-      );
+      final uri = Uri.parse('https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/add-seeds-type');
+      final req = http.MultipartRequest('POST', uri);
 
-      final response = await http.post(
-        uri,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'id': widget.categoryId, 'name': name}),
-      );
+      req.fields['id'] = widget.categoryId;
+      req.fields['name'] = name;
+      req.files.add(await http.MultipartFile.fromPath('image', _pickedImage!.path));
 
-      if (response.statusCode == 200) {
+      final res = await req.send();
+
+      if (res.statusCode == 200) {
         widget.onSaved();
       } else {
-        final body = jsonDecode(response.body);
-        setState(() => _error = body['message'] ?? 'Failed with status ${response.statusCode}');
+        setState(() => _error = 'Failed to save (status ${res.statusCode}).');
       }
     } catch (e) {
       setState(() => _error = 'Error: $e');
@@ -59,7 +64,10 @@ class _AddSeedsTypeSectionState extends State<AddSeedsTypeSection> {
 
   void _cancel() {
     _nameController.clear();
-    setState(() => _error = null);
+    setState(() {
+      _pickedImage = null;
+      _error = null;
+    });
     widget.onSaved();
   }
 
@@ -108,6 +116,34 @@ class _AddSeedsTypeSectionState extends State<AddSeedsTypeSection> {
           ),
 
           const SizedBox(height: 16),
+
+          GestureDetector(
+            onTap: _pickImage,
+            child: Container(
+              height: 160,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.shade400),
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.grey.shade100,
+              ),
+              child: _pickedImage == null
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(Icons.photo_library, color: Colors.grey, size: 36),
+                        SizedBox(height: 8),
+                        Text("Tap to pick an image", style: TextStyle(color: Colors.grey)),
+                      ],
+                    )
+                  : ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.file(_pickedImage!, fit: BoxFit.cover, width: double.infinity),
+                    ),
+            ),
+          ),
+
+          const SizedBox(height: 12),
 
           if (_error != null)
             Text(_error!, style: const TextStyle(color: Colors.red)),

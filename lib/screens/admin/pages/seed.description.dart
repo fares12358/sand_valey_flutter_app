@@ -33,6 +33,7 @@ class _SeedDescriptionAdminPageState extends State<SeedDescriptionAdminPage> {
         _typeId = args['id'] as String;
         _typeName = args['name'] as String;
         _typeImage = args['image'] as String?;
+        
         _fetchDescription();
         _initialized = true;
       }

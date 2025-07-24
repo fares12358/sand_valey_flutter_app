@@ -126,9 +126,8 @@ class CustomWidget2 extends StatelessWidget {
           ),
           child: AutoSizeText(
             text,
-            style: const TextStyle(color: Colors.white, fontSize: 25),
-            maxLines: 2,
-            minFontSize: 16,
+            style: const TextStyle(color: Colors.white, fontSize: 17,),
+            maxLines: 3,
             stepGranularity: 1,
             textAlign: TextAlign.center,
             textDirection: TextDirection.rtl,

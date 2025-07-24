@@ -67,7 +67,7 @@ class CommunicationPageState extends State<CommunicationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xff00793F),
+        backgroundColor: const Color(0xff006F54),
         toolbarHeight: 5,
       ),
       body: BackgroundContainer(
@@ -97,7 +97,7 @@ class CommunicationPageState extends State<CommunicationPage> {
                         left: 0,
                         child: CustomButton(
                           buttonColor: const Color(0xff006F54),
-                          routeName: '/',
+                          routeName: '/home',
                           icon: Image.asset(
                             'assets/images/arrow.png',
                             width: 24,

@@ -61,17 +61,16 @@ class _SeedAdminPageState extends State<SeedTypeAdminPage> {
       if (res.statusCode == 200) {
         final j = jsonDecode(res.body);
         final List<dynamic> data = j['data']['Type'] as List<dynamic>;
+
         seedList =
-            data
-                .map(
-                  (e) => {
-                    'id': e['_id'] as String,
-                    'name': e['name'] as String,
-                    'imageUrl':
-                        e['img'] ?? categoryImage, // fallback to parent image
-                  },
-                )
-                .toList();
+            data.map((e) {
+              return {
+                'id': e['_id'] as String,
+                'name': e['name'] as String,
+                'imageUrl': e['img']['url'] ?? '',
+              };
+            }).toList();
+
         filteredSeeds = List.from(seedList);
       } else {
         _error = 'Failed to load seeds (status ${res.statusCode}).';
@@ -159,7 +158,7 @@ class _SeedAdminPageState extends State<SeedTypeAdminPage> {
 
   void _onSavedCategory() {
     setState(() => _showAdd = false);
-    _fetchSeeds(); // re-fetch to include newly added item
+    _fetchSeeds();
   }
 
   @override
@@ -266,21 +265,12 @@ class _SeedAdminPageState extends State<SeedTypeAdminPage> {
                             horizontal: 16,
                             vertical: 10,
                           ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
+                          child: AddSeedsTypeSection(
+                            onSaved: _onSavedCategory,
+                            categoryId: categoryId,
                           ),
-                          child: AddSeedsTypeSection(onSaved: _onSavedCategory,categoryId:categoryId),
                         ),
 
-                      // Header
                       const Padding(
                         padding: EdgeInsets.symmetric(
                           horizontal: 16,
@@ -296,7 +286,6 @@ class _SeedAdminPageState extends State<SeedTypeAdminPage> {
                         ),
                       ),
 
-                      // Category List or Empty
                       _deleting
                           ? const Padding(
                             padding: EdgeInsets.only(top: 40),
@@ -351,6 +340,12 @@ class _SeedAdminPageState extends State<SeedTypeAdminPage> {
                                     },
                                   );
                                 },
+                                fallbackWidget: const Icon(
+                                  Icons.broken_image,
+                                  size: 50,
+                                  color: Colors.grey,
+                                ),
+                                onUpdated: _fetchSeeds,
                               );
                             },
                           ),

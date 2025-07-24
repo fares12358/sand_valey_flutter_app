@@ -43,6 +43,7 @@ class SeedDescriptionPage extends StatelessWidget {
                     const SizedBox(height: 10),
                     Basiccontainer(
                       text: company.isNotEmpty ? company : 'لا توجد بيانات',
+                      color: const Color(0xFF3B970C),
                     ),
                     const SizedBox(height: 20),
                     // Only this part scrolls
@@ -50,10 +51,12 @@ class SeedDescriptionPage extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: Descriptioncontainer(
+                          color: Colors.white,
                           text:
                               description.isNotEmpty
                                   ? description
                                   : 'لا توجد بيانات',
+                          borderColor: const Color(0xFF3B970C),
                         ),
                       ),
                     ),

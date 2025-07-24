@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
 import 'package:sand_valley/components/account_settings_section.dart';
 import 'package:sand_valley/components/add_account_section.dart';
 import 'package:sand_valley/components/view_users_section.dart';
+import 'package:sand_valley/widgets/Admin/NavBtn.dart';
 
 class MasterAdminPage extends StatefulWidget {
   const MasterAdminPage({super.key});
@@ -13,6 +17,22 @@ class MasterAdminPage extends StatefulWidget {
 
 class _MasterAdminPageState extends State<MasterAdminPage> {
   final GlobalKey<ViewUsersSectionState> _viewUsersKey = GlobalKey();
+  Map<String, dynamic> mainCategories = {};
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    loadCategories();
+  }
+
+  Future<void> loadCategories() async {
+    final data = await fetchMainCategories();
+    setState(() {
+      mainCategories = data;
+      _loading = false;
+    });
+  }
 
   void _refreshUsers() {
     _viewUsersKey.currentState?.fetchUsers();
@@ -24,31 +44,52 @@ class _MasterAdminPageState extends State<MasterAdminPage> {
     Navigator.pushReplacementNamed(context, '/home');
   }
 
-  Widget _buildNavButton(String title,String rout) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/${rout.toLowerCase()}');
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFF7941D),
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
+  Future<Map<String, dynamic>> fetchMainCategories() async {
+    try {
+      final response = await http.get(
+        Uri.parse(
+          "https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/get-main-categories",
         ),
-        child: Text(
-          title,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-      ),
-    );
+      );
+
+      if (response.statusCode == 200) {
+        final jsonBody = jsonDecode(response.body);
+        return Map<String, dynamic>.from(jsonBody['data']);
+      } else {
+        debugPrint('❌ Failed to load categories: ${response.statusCode}');
+        return {};
+      }
+    } catch (e) {
+      debugPrint('❌ Exception: $e');
+      return {};
+    }
   }
+
+  // Widget _buildNavButton(String title,String rout) {
+  //   return SizedBox(
+  //     width: double.infinity,
+  //     child: ElevatedButton(
+  //       onPressed: () {
+  //         Navigator.pushNamed(context, '/${rout.toLowerCase()}');
+  //       },
+  //       style: ElevatedButton.styleFrom(
+  //         backgroundColor: const Color(0xFFF7941D),
+  //         padding: const EdgeInsets.symmetric(vertical: 14),
+  //         shape: RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.circular(10),
+  //         ),
+  //       ),
+  //       child: Text(
+  //         title,
+  //         style: const TextStyle(
+  //           fontSize: 16,
+  //           fontWeight: FontWeight.bold,
+  //           color: Colors.white,
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -93,36 +134,79 @@ class _MasterAdminPageState extends State<MasterAdminPage> {
         children: [
           Image.asset('assets/images/bg-main-screen.png', fit: BoxFit.cover),
           SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // btns
-                    _buildNavButton('Seeds','seed-main-admin'),
-                    const SizedBox(height: 12),
-                    _buildNavButton('Fertilizer','fertilizer-admin'),
-                    const SizedBox(height: 12),
-                    _buildNavButton('Insecticide','insecticide-admin'),
-                    const SizedBox(height: 12),
-                    _buildNavButton('Comunicate','communicate-admin'),
-                    const SizedBox(height: 30),
-                    // components
-                    const AccountSettingsSection(),
-                    const SizedBox(height: 30),
-                    AddAccountSection(onUserAdded: _refreshUsers),
-                    const SizedBox(height: 30),
-                    ViewUsersSection(key: _viewUsersKey),
-                  ],
-                ),
-              ),
-            ),
+            child:
+                _loading
+                    ? const Center(
+                      child: CircularProgressIndicator(
+                        color: Color(0xFFF7941D),
+                      ),
+                    )
+                    : SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 16,
+                      ),
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            EditableNavItem(
+                              title: 'seeds',
+                              imageUrl:
+                                  mainCategories["seeds"]?["img"]?["url"] ?? "",
+                              uploadApiUrl:
+                                  'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/update-main-categories',
+                              routeName: '/seed-main-admin',
+                              onImageUpdated: loadCategories,
+                            ),
+                            const SizedBox(height: 12),
+                            EditableNavItem(
+                              title: 'Fertilizer',
+                              imageUrl:
+                                  mainCategories["Fertilizer"]?["img"]?["url"] ??
+                                  "",
+                              uploadApiUrl:
+                                  'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/update-main-categories',
+                              routeName: '/fertilizer-admin',
+                              onImageUpdated: loadCategories,
+                            ),
+                            const SizedBox(height: 12),
+                            EditableNavItem(
+                              title: 'Insecticide',
+                              imageUrl:
+                                  mainCategories["Insecticide"]?["img"]?["url"] ??
+                                  "",
+                              uploadApiUrl:
+                                  'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/update-main-categories',
+                              routeName: '/insecticide-admin',
+                              onImageUpdated: loadCategories,
+                            ),
+                            const SizedBox(height: 12),
+                            EditableNavItem(
+                              title: 'Communication',
+                              imageUrl:
+                                  mainCategories["Communication"]?["img"]?["url"] ??
+                                  "",
+                              uploadApiUrl:
+                                  'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/update-main-categories',
+                              routeName: '/communicate-admin',
+                              onImageUpdated: loadCategories,
+                            ),
+                            const SizedBox(height: 30),
+                            const AccountSettingsSection(),
+                            const SizedBox(height: 30),
+                            AddAccountSection(onUserAdded: _refreshUsers),
+                            const SizedBox(height: 30),
+                            ViewUsersSection(key: _viewUsersKey),
+                          ],
+                        ),
+                      ),
+                    ),
           ),
         ],
       ),

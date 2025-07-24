@@ -27,6 +27,8 @@ class _SeedTypeState extends State<SeedType> {
   bool isLoading = true;
   String? error;
 
+  Future<void>? _fetchFuture;
+
   @override
   void initState() {
     super.initState();
@@ -46,21 +48,21 @@ class _SeedTypeState extends State<SeedType> {
 
     final args =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    if (args != null) {
+    if (args != null && seedId == null) {
       seedId = args['id'];
       seedName = args['name'];
       seedImage = args['image'];
-      _fetchSeedTypeData(seedId!);
+      _fetchFuture = _fetchSeedTypeData(seedId!);
     }
   }
 
   Future<void> _fetchSeedTypeData(String id) async {
-    setState(() {
-      isLoading = true;
-      error = null;
-    });
-
     try {
+      setState(() {
+        isLoading = true;
+        error = null;
+      });
+
       final uri = Uri.parse(
         'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/get-seeds-type/$id',
       );
@@ -142,115 +144,135 @@ class _SeedTypeState extends State<SeedType> {
               ),
               Expanded(
                 child:
-                    isLoading
-                        ? const Center(
-                          child: CircularProgressIndicator(
-                            color: Color(0xFFF7941D),
-                          ),
-                        )
-                        : error != null
-                        ? Center(
-                          child: Text(
-                            error!,
-                            style: const TextStyle(color: Colors.red),
-                          ),
-                        )
-                        : seedTypes.isEmpty
-                        ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.local_florist,
-                                size: 60,
-                                color: Colors.grey[400],
-                              ),
-                              const SizedBox(height: 12),
-                              const Text(
-                                'لا توجد أنواع لهذا القسم',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.bold,
+                    _fetchFuture == null
+                        ? const Center(child: CircularProgressIndicator())
+                        : FutureBuilder<void>(
+                          future: _fetchFuture,
+                          builder: (context, snapshot) {
+                            if (isLoading) {
+                              return const Center(
+                                child: CircularProgressIndicator(
+                                  color: Color(0xFFF7941D),
                                 ),
-                              ),
-                            ],
-                          ),
-                        )
-                        : RawScrollbar(
-                          controller: _scrollController,
-                          thumbVisibility: true,
-                          trackVisibility: true,
-                          minThumbLength: 48,
-                          radius: const Radius.circular(20),
-                          thickness: 8,
-                          thumbColor: const Color(0xFF3B970C),
-                          trackColor: Colors.grey.withOpacity(0.2),
-                          child: ListView.builder(
-                            controller: _scrollController,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 20,
-                            ),
-                            itemCount: seedTypes.length,
-                            itemBuilder: (context, index) {
-                              final item = seedTypes[index];
-                              final isEven = index % 2 == 0;
-
-                              final widget =
-                                  isEven
-                                      ? CustomWidget2(
-                                        customColor: const Color(0xFFF7941D),
-                                        customBorderColor: const Color(
-                                          0xff00793F,
-                                        ),
-                                        text: item['name'] ?? 'بدون اسم',
-                                        image:
-                                            seedImage ??
-                                            'assets/images/seeds-img.png',
-                                        routeName: '/seed-description',
-                                        arguments: {
-                                          'typeName':
-                                              item['description']?['name'] ??
-                                              '',
-                                          'company':
-                                              item['description']?['company'] ??
-                                              '',
-                                          'description':
-                                              item['description']?['description'] ??
-                                              '',
-                                          'parentImage': seedImage,
-                                        },
-                                      )
-                                      : CustomWidget2Reversed(
-                                        customColor: const Color(0xFFF7941D),
-                                        customBorderColor: const Color(
-                                          0xff00793F,
-                                        ),
-                                        text: item['name'] ?? 'بدون اسم',
-                                        image:
-                                            seedImage ??
-                                            'assets/images/seeds-img.png',
-                                        routeName: '/seed-description',
-                                        arguments: {
-                                          'typeName':
-                                              item['description']?['name'] ??
-                                              '',
-                                          'company':
-                                              item['description']?['company'] ??
-                                              '',
-                                          'description':
-                                              item['description']?['description'] ??
-                                              '',
-                                          'parentImage': seedImage,
-                                        },
-                                      );
-
-                              return Column(
-                                children: [widget, const SizedBox(height: 16)],
                               );
-                            },
-                          ),
+                            }
+
+                            if (error != null) {
+                              return Center(
+                                child: Text(
+                                  error!,
+                                  style: const TextStyle(color: Colors.red),
+                                ),
+                              );
+                            }
+
+                            if (seedTypes.isEmpty) {
+                              return Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.local_florist,
+                                      size: 60,
+                                      color: Colors.grey[400],
+                                    ),
+                                    const SizedBox(height: 12),
+                                    const Text(
+                                      'لا توجد أنواع لهذا القسم',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+
+                            return RawScrollbar(
+                              controller: _scrollController,
+                              thumbVisibility: true,
+                              trackVisibility: true,
+                              minThumbLength: 48,
+                              radius: const Radius.circular(20),
+                              thickness: 8,
+                              thumbColor: const Color(0xFF3B970C),
+                              trackColor: Colors.grey.withOpacity(0.2),
+                              child: ListView.builder(
+                                controller: _scrollController,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 20,
+                                ),
+                                itemCount: seedTypes.length,
+                                itemBuilder: (context, index) {
+                                  final item = seedTypes[index];
+                                  final isEven = index % 2 == 0;
+
+                                  final widget =
+                                      isEven
+                                          ? CustomWidget2(
+                                            customColor: const Color(
+                                              0xFFF7941D,
+                                            ),
+                                            customBorderColor: const Color(
+                                              0xff00793F,
+                                            ),
+                                            text: item['name'] ?? 'بدون اسم',
+                                            image:
+                                                item['img']?['url'] ??
+                                                'assets/images/seeds-img.png',
+                                            routeName: '/seed-description',
+                                            arguments: {
+                                              'typeName':
+                                                  item['description']?['name'] ??
+                                                  '',
+                                              'company':
+                                                  item['description']?['company'] ??
+                                                  '',
+                                              'description':
+                                                  item['description']?['description'] ??
+                                                  '',
+                                              'parentImage':item['img']?['url'],
+                                            },
+                                          )
+                                          : CustomWidget2Reversed(
+                                            customColor: const Color(
+                                              0xFFF7941D,
+                                            ),
+                                            customBorderColor: const Color(
+                                              0xff00793F,
+                                            ),
+                                            text: item['name'] ?? 'بدون اسم',
+                                            image:
+                                                item['img']?['url'] ??
+                                                'assets/images/seeds-img.png',
+                                            routeName: '/seed-description',
+                                            arguments: {
+                                              'typeName':
+                                                  item['description']?['name'] ??
+                                                  '',
+                                              'company':
+                                                  item['description']?['company'] ??
+                                                  '',
+                                              'description':
+                                                  item['description']?['description'] ??
+                                                  '',
+                                              'parentImage': item['img']?['url'],
+                                            },
+                                          );
+
+                                  return Column(
+                                    children: [
+                                      widget,
+                                      const SizedBox(height: 16),
+                                    ],
+                                  );
+                                },
+                              ),
+                            );
+                          },
                         ),
               ),
             ],
