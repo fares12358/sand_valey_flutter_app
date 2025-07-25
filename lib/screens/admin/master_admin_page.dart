@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:sand_valley/components/account_settings_section.dart';
 import 'package:sand_valley/components/add_account_section.dart';
 import 'package:sand_valley/components/view_users_section.dart';
+import 'package:sand_valley/providers/app_state.dart';
 import 'package:sand_valley/widgets/Admin/NavBtn.dart';
 
 class MasterAdminPage extends StatefulWidget {
@@ -46,10 +48,10 @@ class _MasterAdminPageState extends State<MasterAdminPage> {
 
   Future<Map<String, dynamic>> fetchMainCategories() async {
     try {
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
       final response = await http.get(
-        Uri.parse(
-          "https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/get-main-categories",
-        ),
+        Uri.parse("$baseUrl/get-main-categories"),
       );
 
       if (response.statusCode == 200) {
@@ -159,8 +161,7 @@ class _MasterAdminPageState extends State<MasterAdminPage> {
                               title: 'seeds',
                               imageUrl:
                                   mainCategories["seeds"]?["img"]?["url"] ?? "",
-                              uploadApiUrl:
-                                  'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/update-main-categories',
+
                               routeName: '/seed-main-admin',
                               onImageUpdated: loadCategories,
                             ),
@@ -170,8 +171,7 @@ class _MasterAdminPageState extends State<MasterAdminPage> {
                               imageUrl:
                                   mainCategories["Fertilizer"]?["img"]?["url"] ??
                                   "",
-                              uploadApiUrl:
-                                  'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/update-main-categories',
+
                               routeName: '/fertilizer-admin',
                               onImageUpdated: loadCategories,
                             ),
@@ -181,8 +181,7 @@ class _MasterAdminPageState extends State<MasterAdminPage> {
                               imageUrl:
                                   mainCategories["Insecticide"]?["img"]?["url"] ??
                                   "",
-                              uploadApiUrl:
-                                  'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/update-main-categories',
+
                               routeName: '/insecticide-admin',
                               onImageUpdated: loadCategories,
                             ),
@@ -192,8 +191,7 @@ class _MasterAdminPageState extends State<MasterAdminPage> {
                               imageUrl:
                                   mainCategories["Communication"]?["img"]?["url"] ??
                                   "",
-                              uploadApiUrl:
-                                  'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/update-main-categories',
+
                               routeName: '/communicate-admin',
                               onImageUpdated: loadCategories,
                             ),

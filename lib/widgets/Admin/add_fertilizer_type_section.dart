@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:mime/mime.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart' as p;
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 
 const _orange = Color(0xFFF7941D);
 
@@ -23,7 +25,8 @@ class AddFertilizerTypeSection extends StatefulWidget {
   });
 
   @override
-  State<AddFertilizerTypeSection> createState() => _AddFertilizerTypeSectionState();
+  State<AddFertilizerTypeSection> createState() =>
+      _AddFertilizerTypeSectionState();
 }
 
 class _AddFertilizerTypeSectionState extends State<AddFertilizerTypeSection> {
@@ -53,14 +56,15 @@ class _AddFertilizerTypeSectionState extends State<AddFertilizerTypeSection> {
 
     setState(() => _loading = true);
     try {
-      final uri = Uri.parse(
-        'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/add-fertilizer-type',
-      );
-      final req = http.MultipartRequest('POST', uri)
-        ..fields['id'] = widget.categoryId
-        ..fields['name'] = name
-        ..fields['description'] = widget.viewDesc ? description : ''
-        ..fields['company'] = widget.viewDesc ? company : '';
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
+      final uri = Uri.parse('$baseUrl/add-fertilizer-type');
+      final req =
+          http.MultipartRequest('POST', uri)
+            ..fields['id'] = widget.categoryId
+            ..fields['name'] = name
+            ..fields['description'] = widget.viewDesc ? description : ''
+            ..fields['company'] = widget.viewDesc ? company : '';
 
       final mime = lookupMimeType(_img!.path)!.split('/');
       req.files.add(
@@ -75,9 +79,9 @@ class _AddFertilizerTypeSectionState extends State<AddFertilizerTypeSection> {
       final res = await req.send();
       if (res.statusCode == 200) widget.onSave();
     } catch (_) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to add type')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Failed to add type')));
     }
     setState(() => _loading = false);
   }
@@ -119,18 +123,19 @@ class _AddFertilizerTypeSectionState extends State<AddFertilizerTypeSection> {
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: Colors.grey),
                 ),
-                child: _img == null
-                    ? const Center(
-                        child: Icon(
-                          Icons.image,
-                          size: 48,
-                          color: Colors.grey,
+                child:
+                    _img == null
+                        ? const Center(
+                          child: Icon(
+                            Icons.image,
+                            size: 48,
+                            color: Colors.grey,
+                          ),
+                        )
+                        : ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.file(_img!, fit: BoxFit.cover),
                         ),
-                      )
-                    : ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.file(_img!, fit: BoxFit.cover),
-                      ),
               ),
             ),
             if (widget.viewDesc) ...[
@@ -151,31 +156,32 @@ class _AddFertilizerTypeSectionState extends State<AddFertilizerTypeSection> {
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
-              children: _loading
-                  ? const [CircularProgressIndicator(color: _orange)]
-                  : [
-                      ElevatedButton(
-                        onPressed: _loading ? null : widget.onCancel,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey,
+              children:
+                  _loading
+                      ? const [CircularProgressIndicator(color: _orange)]
+                      : [
+                        ElevatedButton(
+                          onPressed: _loading ? null : widget.onCancel,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey,
+                          ),
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
-                        child: const Text(
-                          'Cancel',
-                          style: TextStyle(color: Colors.white),
+                        const SizedBox(width: 12),
+                        ElevatedButton(
+                          onPressed: _loading ? null : _submit,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _orange,
+                          ),
+                          child: const Text(
+                            'Save',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      ElevatedButton(
-                        onPressed: _loading ? null : _submit,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: _orange,
-                        ),
-                        child: const Text(
-                          'Save',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ],
+                      ],
             ),
           ],
         ),

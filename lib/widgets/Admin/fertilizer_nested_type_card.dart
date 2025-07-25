@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 
 class NestedFertilizerTypeCard extends StatefulWidget {
   final Map<String, dynamic> data;
@@ -56,9 +58,9 @@ class _NestedFertilizerTypeCardState extends State<NestedFertilizerTypeCard> {
   Future<void> _handleSave() async {
     setState(() => _isSaving = true);
     try {
-      final url = Uri.parse(
-        'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/update-fertilizer-nested-type',
-      );
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
+      final url = Uri.parse('$baseUrl/update-fertilizer-nested-type');
 
       final request = http.MultipartRequest('POST', url);
       request.fields['categoryId'] = widget.categoryId;
@@ -127,8 +129,10 @@ class _NestedFertilizerTypeCardState extends State<NestedFertilizerTypeCard> {
 
     setState(() => _isDeleting = true);
     try {
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
       final url = Uri.parse(
-        'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/delete-fertilizer-nested-type/${widget.categoryId}/${widget.parentId}/${widget.data['id']}',
+        '$baseUrl/delete-fertilizer-nested-type/${widget.categoryId}/${widget.parentId}/${widget.data['id']}',
       );
       final response = await http.delete(url);
       setState(() => _isDeleting = false);

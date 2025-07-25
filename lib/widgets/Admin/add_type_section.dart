@@ -4,6 +4,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:mime/mime.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 
 class AddTypeSection extends StatefulWidget {
   final VoidCallback onCancel;
@@ -64,9 +66,9 @@ class _AddTypeSectionState extends State<AddTypeSection> {
     setState(() => _isLoading = true);
 
     try {
-      final uri = Uri.parse(
-        "https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/add-insecticide-type",
-      );
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
+      final uri = Uri.parse("$baseUrl/add-insecticide-type");
 
       final request = http.MultipartRequest("POST", uri);
       request.fields['name'] = name;
@@ -88,14 +90,14 @@ class _AddTypeSectionState extends State<AddTypeSection> {
       if (response.statusCode == 200) {
         widget.onSave();
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("❌ Failed to add type")),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("❌ Failed to add type")));
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("❌ Error: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("❌ Error: $e")));
       print(e);
     } finally {
       setState(() => _isLoading = false);
@@ -182,16 +184,17 @@ class _AddTypeSectionState extends State<AddTypeSection> {
               ElevatedButton(
                 onPressed: _isLoading ? null : _submitType,
                 style: ElevatedButton.styleFrom(backgroundColor: orangeColor),
-                child: _isLoading
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Color(0xFFF7941D)
-                        ),
-                      )
-                    : const Text('Save'),
+                child:
+                    _isLoading
+                        ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Color(0xFFF7941D),
+                          ),
+                        )
+                        : const Text('Save'),
               ),
               const SizedBox(width: 12),
               ElevatedButton(

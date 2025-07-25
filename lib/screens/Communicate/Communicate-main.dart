@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 import 'package:sand_valley/widgets/background_container.dart';
 import 'package:sand_valley/widgets/customButton.dart';
 import 'package:sand_valley/widgets/customWidget2.dart';
@@ -36,8 +38,11 @@ class CommunicationPageState extends State<CommunicationPage> {
 
   Future<void> _fetchCommunicationData() async {
     try {
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
       final response = await http.get(
-        Uri.parse('https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/get-communication-data'),
+        Uri.parse(
+          '$baseUrl/get-communication-data',
+        ),
       );
 
       if (response.statusCode == 200) {
@@ -145,41 +150,56 @@ class CommunicationPageState extends State<CommunicationPage> {
 
               // Body
               Expanded(
-                child: isLoading
-                    ? const Center(child: CircularProgressIndicator(color: Color(0xff00793F),))
-                    : communicationData.isEmpty
+                child:
+                    isLoading
+                        ? const Center(
+                          child: CircularProgressIndicator(
+                            color: Color(0xff00793F),
+                          ),
+                        )
+                        : communicationData.isEmpty
                         ? const Center(child: Text('لا توجد بيانات حالياً'))
                         : ListView.builder(
-                            controller: _scrollController,
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                            itemCount: communicationData.length,
-                            itemBuilder: (context, index) {
-                              final item = communicationData[index];
-                              final isEven = index % 2 == 0;
+                          controller: _scrollController,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 20,
+                          ),
+                          itemCount: communicationData.length,
+                          itemBuilder: (context, index) {
+                            final item = communicationData[index];
+                            final isEven = index % 2 == 0;
 
-                              final widget = isEven
-                                  ? CustomWidget2(
-                                      customBorderColor: const Color(0xff006F54),
+                            final widget =
+                                isEven
+                                    ? CustomWidget2(
+                                      customBorderColor: const Color(
+                                        0xff006F54,
+                                      ),
                                       customColor: const Color(0xff00793F),
                                       text: item['name'] ?? 'بدون اسم',
-                                      image: 'https://media.istockphoto.com/id/184994461/photo/aerial-view-of-agricultural-land.jpg?s=612x612&w=0&k=20&c=P9mftj-XXfKp5TiMRCe6GntiLkdRuyi4t4KjTQ6bKGw=',
+                                      image:
+                                          'https://media.istockphoto.com/id/184994461/photo/aerial-view-of-agricultural-land.jpg?s=612x612&w=0&k=20&c=P9mftj-XXfKp5TiMRCe6GntiLkdRuyi4t4KjTQ6bKGw=',
                                       routeName: '/communicate-eng',
                                       arguments: {'id': item['_id']},
                                     )
-                                  : CustomWidget2Reversed(
-                                      customBorderColor: const Color(0xff006F54),
+                                    : CustomWidget2Reversed(
+                                      customBorderColor: const Color(
+                                        0xff006F54,
+                                      ),
                                       customColor: const Color(0xff00793F),
                                       text: item['name'] ?? 'بدون اسم',
-                                      image: 'https://media.istockphoto.com/id/184994461/photo/aerial-view-of-agricultural-land.jpg?s=612x612&w=0&k=20&c=P9mftj-XXfKp5TiMRCe6GntiLkdRuyi4t4KjTQ6bKGw=',
+                                      image:
+                                          'https://media.istockphoto.com/id/184994461/photo/aerial-view-of-agricultural-land.jpg?s=612x612&w=0&k=20&c=P9mftj-XXfKp5TiMRCe6GntiLkdRuyi4t4KjTQ6bKGw=',
                                       routeName: '/communicate-eng',
                                       arguments: {'id': item['_id']},
                                     );
 
-                              return Column(
-                                children: [widget, const SizedBox(height: 10)],
-                              );
-                            },
-                          ),
+                            return Column(
+                              children: [widget, const SizedBox(height: 10)],
+                            );
+                          },
+                        ),
               ),
             ],
           ),

@@ -6,6 +6,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path;
 import 'package:http_parser/http_parser.dart';
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 
 class SeedsTypeCart extends StatefulWidget {
   final String id;
@@ -23,7 +25,7 @@ class SeedsTypeCart extends StatefulWidget {
     required this.onDelete,
     this.onTap,
     required this.fallbackWidget,
-     required this.onUpdated, 
+    required this.onUpdated,
   });
 
   @override
@@ -68,9 +70,9 @@ class _SeedsTypeCartState extends State<SeedsTypeCart> {
     setState(() => _loading = true);
 
     try {
-      final uri = Uri.parse(
-        'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/update-seeds-type',
-      );
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
+      final uri = Uri.parse('$baseUrl/update-seeds-type');
 
       final request = http.MultipartRequest('POST', uri);
 

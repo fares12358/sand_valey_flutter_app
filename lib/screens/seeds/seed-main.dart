@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 import 'package:sand_valley/widgets/background_container.dart';
 import 'package:sand_valley/widgets/customButton.dart';
 import 'package:sand_valley/widgets/customWidget2.dart';
@@ -44,10 +46,10 @@ class _SeedMainPageState extends State<SeedMainPage> {
     });
 
     try {
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
       final res = await http.get(
-        Uri.parse(
-          'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/get-seeds-data',
-        ),
+        Uri.parse('$baseUrl/get-seeds-data'),
         headers: {'Content-Type': 'application/json'},
       );
 

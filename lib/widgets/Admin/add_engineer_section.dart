@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 
 class AddEngineerSection extends StatefulWidget {
   final String communicationId;
@@ -53,13 +55,18 @@ class _AddEngineerSectionState extends State<AddEngineerSection> {
 
     try {
       final token = await _secureStorage.read(key: 'token');
-      final url = Uri.parse('https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/add-eng-data');
-      final request = http.MultipartRequest('POST', url)
-        ..headers['Authorization'] = 'Bearer $token'
-        ..fields['id'] = widget.communicationId
-        ..fields['name'] = name
-        ..fields['phone'] = phone
-        ..files.add(await http.MultipartFile.fromPath('image', _imageFile!.path));
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
+      final url = Uri.parse('$baseUrl/add-eng-data');
+      final request =
+          http.MultipartRequest('POST', url)
+            ..headers['Authorization'] = 'Bearer $token'
+            ..fields['id'] = widget.communicationId
+            ..fields['name'] = name
+            ..fields['phone'] = phone
+            ..files.add(
+              await http.MultipartFile.fromPath('image', _imageFile!.path),
+            );
 
       final streamedRes = await request.send();
       final res = await http.Response.fromStream(streamedRes);
@@ -112,7 +119,10 @@ class _AddEngineerSectionState extends State<AddEngineerSection> {
                   children: [
                     const Icon(Icons.image, color: Colors.orange),
                     const SizedBox(width: 10),
-                    const Text('Pick an image', style: TextStyle(color: Colors.orange)),
+                    const Text(
+                      'Pick an image',
+                      style: TextStyle(color: Colors.orange),
+                    ),
                   ],
                 ),
               ),
@@ -144,10 +154,21 @@ class _AddEngineerSectionState extends State<AddEngineerSection> {
                 const SizedBox(width: 10),
                 ElevatedButton.icon(
                   onPressed: _isSaving ? null : _saveEngineer,
-                  icon: _isSaving
-                      ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : const Icon(Icons.save, color: Colors.white),
-                  label: const Text('Save', style: TextStyle(color: Colors.white)),
+                  icon:
+                      _isSaving
+                          ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                          : const Icon(Icons.save, color: Colors.white),
+                  label: const Text(
+                    'Save',
+                    style: TextStyle(color: Colors.white),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFF7941D),
                   ),

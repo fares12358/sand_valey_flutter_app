@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 
 class UserDetailPage extends StatefulWidget {
   final String userId;
@@ -38,10 +40,10 @@ class _UserDetailPageState extends State<UserDetailPage> {
   }
 
   Future<void> _fetchUser() async {
+    final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
     final token = await _secureStorage.read(key: 'token');
-    final url = Uri.parse(
-      'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/get-user-by-id/${widget.userId}',
-    );
+    final url = Uri.parse('$baseUrl/get-user-by-id/${widget.userId}');
 
     try {
       final response = await http.get(
@@ -74,11 +76,10 @@ class _UserDetailPageState extends State<UserDetailPage> {
 
   Future<void> _verifyUser() async {
     setState(() => _isVerifying = true);
+    final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
 
     final token = await _secureStorage.read(key: 'token');
-    final url = Uri.parse(
-      'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/verify-user/${widget.userId}',
-    );
+    final url = Uri.parse('$baseUrl/verify-user/${widget.userId}');
 
     try {
       final response = await http.get(
@@ -130,9 +131,8 @@ class _UserDetailPageState extends State<UserDetailPage> {
     setState(() => _isDeleting = true);
 
     final token = await _secureStorage.read(key: 'token');
-    final url = Uri.parse(
-      'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/delete-user-by-id/${widget.userId}',
-    );
+    final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+    final url = Uri.parse('$baseUrl/delete-user-by-id/${widget.userId}');
 
     try {
       final response = await http.delete(
@@ -284,8 +284,14 @@ class _UserDetailPageState extends State<UserDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("User Detail", style: TextStyle(color: Colors.white, fontSize: 22,
-            fontWeight: FontWeight.bold,)),
+        title: const Text(
+          "User Detail",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: const Color(0xFFF7941D),
         iconTheme: const IconThemeData(color: Colors.white),
       ),

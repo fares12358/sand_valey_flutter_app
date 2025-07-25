@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 
 class FertilizerCard extends StatefulWidget {
   final Map<String, dynamic> data;
@@ -53,9 +55,9 @@ class _FertilizerCardState extends State<FertilizerCard> {
     setState(() => _isLoading = true);
 
     try {
-      final uri = Uri.parse(
-        'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/update-fertilizer-data',
-      );
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
+      final uri = Uri.parse('$baseUrl/update-fertilizer-data');
       final request =
           http.MultipartRequest('POST', uri)
             ..fields['id'] = widget.data['id']
@@ -106,8 +108,10 @@ class _FertilizerCardState extends State<FertilizerCard> {
     setState(() => _isLoading = true);
 
     try {
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
       final uri = Uri.parse(
-        'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/delete-fertilizer-data/${widget.data['id']}',
+        '$baseUrl/delete-fertilizer-data/${widget.data['id']}',
       );
       final res = await http.delete(uri);
 

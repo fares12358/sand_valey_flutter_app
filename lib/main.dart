@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:sand_valley/routes/app_routes.dart';
-import 'providers/user_provider.dart';
-import 'services/connectivity_service.dart';
+import 'package:sand_valley/providers/app_state.dart'; // ✅ Import AppState
+import 'package:sand_valley/services/connectivity_service.dart';
 import 'package:lottie/lottie.dart';
 
 void main() async {
@@ -14,7 +14,9 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(
+          create: (_) => AppState(),
+        ), // ✅ Global BASE_URL provider
         Provider<FlutterSecureStorage>.value(value: secureStorage),
         Provider<ConnectivityService>(create: (_) => ConnectivityService()),
       ],
@@ -106,7 +108,6 @@ class SandValleyApp extends StatelessWidget {
                         'no internet connection',
                         style: TextStyle(
                           fontSize: 15,
-                          // color: Color.fromARGB(255, 151, 151, 151),
                           color: Color(0xFFF7941D),
                           fontWeight: FontWeight.normal,
                         ),

@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 
 class TypeItemCard extends StatefulWidget {
   final String catId;
@@ -68,14 +70,17 @@ class _TypeItemCardState extends State<TypeItemCard> {
   Future<void> _saveChanges() async {
     setState(() => isLoading = true);
     try {
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
       final uri = Uri.parse(
-        'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/update-insecticide-type/${widget.catId}/${widget.typeId}',
+        '$baseUrl/update-insecticide-type/${widget.catId}/${widget.typeId}',
       );
 
-      final request = http.MultipartRequest('POST', uri)
-        ..fields['name'] = nameController.text
-        ..fields['description'] = descriptionController.text
-        ..fields['company'] = companyController.text;
+      final request =
+          http.MultipartRequest('POST', uri)
+            ..fields['name'] = nameController.text
+            ..fields['description'] = descriptionController.text
+            ..fields['company'] = companyController.text;
 
       if (_selectedImage != null) {
         request.files.add(
@@ -100,9 +105,9 @@ class _TypeItemCardState extends State<TypeItemCard> {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('❌ Error: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('❌ Error: $e')));
     } finally {
       setState(() => isLoading = false);
     }
@@ -111,20 +116,24 @@ class _TypeItemCardState extends State<TypeItemCard> {
   Future<void> _deleteType() async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text("Confirm Delete"),
-        content: const Text("Are you sure you want to delete this type?"),
-        actions: [
-          TextButton(
-            child: const Text("Cancel"),
-            onPressed: () => Navigator.pop(ctx, false),
+      builder:
+          (ctx) => AlertDialog(
+            title: const Text("Confirm Delete"),
+            content: const Text("Are you sure you want to delete this type?"),
+            actions: [
+              TextButton(
+                child: const Text("Cancel"),
+                onPressed: () => Navigator.pop(ctx, false),
+              ),
+              TextButton(
+                child: const Text(
+                  "Delete",
+                  style: TextStyle(color: Colors.red),
+                ),
+                onPressed: () => Navigator.pop(ctx, true),
+              ),
+            ],
           ),
-          TextButton(
-            child: const Text("Delete", style: TextStyle(color: Colors.red)),
-            onPressed: () => Navigator.pop(ctx, true),
-          ),
-        ],
-      ),
     );
 
     if (confirm != true) return;
@@ -132,8 +141,10 @@ class _TypeItemCardState extends State<TypeItemCard> {
     setState(() => isLoading = true);
 
     try {
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
       final uri = Uri.parse(
-        'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/delete-insecticide-type/${widget.catId}/${widget.typeId}',
+        '$baseUrl/delete-insecticide-type/${widget.catId}/${widget.typeId}',
       );
       final response = await http.delete(uri);
 
@@ -148,9 +159,9 @@ class _TypeItemCardState extends State<TypeItemCard> {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('❌ Error: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('❌ Error: $e')));
     } finally {
       setState(() => isLoading = false);
     }
@@ -160,9 +171,20 @@ class _TypeItemCardState extends State<TypeItemCard> {
   Widget build(BuildContext context) {
     final imageWidget = ClipRRect(
       borderRadius: BorderRadius.circular(12),
-      child: _selectedImage != null
-          ? Image.file(_selectedImage!, height: 64, width: 64, fit: BoxFit.cover)
-          : Image.network(widget.imageUrl, height: 64, width: 64, fit: BoxFit.cover),
+      child:
+          _selectedImage != null
+              ? Image.file(
+                _selectedImage!,
+                height: 64,
+                width: 64,
+                fit: BoxFit.cover,
+              )
+              : Image.network(
+                widget.imageUrl,
+                height: 64,
+                width: 64,
+                fit: BoxFit.cover,
+              ),
     );
 
     return Container(
@@ -186,7 +208,10 @@ class _TypeItemCardState extends State<TypeItemCard> {
                   children: [
                     Text(
                       widget.typeName,
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(widget.description),
@@ -200,7 +225,9 @@ class _TypeItemCardState extends State<TypeItemCard> {
               ),
               IconButton(
                 icon: Icon(
-                  isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                  isExpanded
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
                 ),
                 onPressed: () => setState(() => isExpanded = !isExpanded),
               ),
@@ -284,8 +311,8 @@ class _TypeItemCardState extends State<TypeItemCard> {
                       });
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey,   // ✅ cancel btn gray
-                      foregroundColor: Colors.white,  // ✅ text white
+                      backgroundColor: Colors.grey, // ✅ cancel btn gray
+                      foregroundColor: Colors.white, // ✅ text white
                     ),
                     child: const Text('Cancel'),
                   ),

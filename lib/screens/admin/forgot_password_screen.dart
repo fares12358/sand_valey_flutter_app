@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 import 'dart:convert';
 import 'package:sand_valley/widgets/background_container.dart';
 
@@ -34,14 +36,17 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     }
 
     try {
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
       final response = await http.post(
-        Uri.parse('https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/forgot-password'),
+        Uri.parse(
+          '$baseUrl/forgot-password',
+        ),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'input': input}),
       );
 
       // Debug logs
-      print('🔹 Status: ${response.statusCode}');
       print('🔹 Body: ${response.body}');
 
       final data = jsonDecode(response.body);
@@ -50,13 +55,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       if (response.statusCode == 200) {
         // Success → navigate to OTP
         _emailController.clear();
-        Navigator.pushNamed(context, '/otp',arguments: input,);
+        Navigator.pushNamed(context, '/otp', arguments: input);
       } else {
         // API returned error code
         setState(() {
-          _errorMessage = msg.isNotEmpty
-              ? msg
-              : 'Something went wrong (${response.statusCode})';
+          _errorMessage =
+              msg.isNotEmpty
+                  ? msg
+                  : 'Something went wrong (${response.statusCode})';
         });
       }
     } catch (e) {
@@ -77,7 +83,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Forgot Password' ,style: TextStyle(color: Colors.white),),
+        title: const Text(
+          'Forgot Password',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Color(0xFFF7941D),
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -105,8 +114,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       labelText: 'Email or Username',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide:
-                            const BorderSide(color: Color(0xFFF7941D)),
+                        borderSide: const BorderSide(color: Color(0xFFF7941D)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -129,25 +137,24 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   const SizedBox(height: 20),
                   _isLoading
                       ? const CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            Color(0xFFF7941D),
-                          ),
-                        )
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Color(0xFFF7941D),
+                        ),
+                      )
                       : SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: _handleForgotPassword,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFF7941D),
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 14),
-                            ),
-                            child: const Text(
-                              'Send',
-                              style: TextStyle(fontSize: 16),
-                            ),
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _handleForgotPassword,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFF7941D),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                          child: const Text(
+                            'Send',
+                            style: TextStyle(fontSize: 16),
                           ),
                         ),
+                      ),
                 ],
               ),
             ),

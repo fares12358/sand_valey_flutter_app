@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 import 'package:sand_valley/screens/admin/user_detail_page.dart';
 
 class ViewUsersSection extends StatefulWidget {
@@ -13,6 +15,7 @@ class ViewUsersSection extends StatefulWidget {
 
 class ViewUsersSectionState extends State<ViewUsersSection> {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+
   List<dynamic> _users = [];
   bool _isLoading = true;
   String? _errorMessage;
@@ -29,10 +32,9 @@ class ViewUsersSectionState extends State<ViewUsersSection> {
       _errorMessage = null;
     });
 
+    final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
     final token = await _secureStorage.read(key: 'token');
-    final url = Uri.parse(
-      'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/get-users',
-    );
+    final url = Uri.parse('$baseUrl/get-users');
 
     try {
       final response = await http.get(

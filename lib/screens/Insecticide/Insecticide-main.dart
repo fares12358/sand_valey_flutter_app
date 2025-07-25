@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 import 'package:sand_valley/widgets/background_container.dart';
 import 'package:sand_valley/widgets/customButton.dart';
 import 'package:sand_valley/widgets/customWidget2.dart';
@@ -43,9 +45,9 @@ class _InsecticideMainPage extends State<InsecticideMainPage> {
     });
 
     try {
-      final res = await http.get(
-        Uri.parse("https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/get-insecticide-data"),
-      );
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
+      final res = await http.get(Uri.parse("$baseUrl/get-insecticide-data"));
 
       if (res.statusCode == 200) {
         final body = json.decode(res.body);
@@ -151,49 +153,71 @@ class _InsecticideMainPage extends State<InsecticideMainPage> {
 
               // Scrollable content area
               Expanded(
-                child: _isLoading
-                    ? const Center(
-                        child: CircularProgressIndicator(color: Color(0xff006F54)),
-                      )
-                    : _error != null
+                child:
+                    _isLoading
+                        ? const Center(
+                          child: CircularProgressIndicator(
+                            color: Color(0xff006F54),
+                          ),
+                        )
+                        : _error != null
                         ? Center(
-                            child: Text(_error!,
-                                style: const TextStyle(color: Colors.red, fontSize: 16)),
-                          )
+                          child: Text(
+                            _error!,
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 16,
+                            ),
+                          ),
+                        )
                         : ListView.builder(
-                            controller: _scrollController,
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                            itemCount: _insecticideList.length,
-                            itemBuilder: (context, index) {
-                              final item = _insecticideList[index];
-                              final name = item['name'];
-                              final imageUrl = item['img']['url'];
-                              final categoryId = item['_id'];
-                              final isEven = index % 2 == 0;
+                          controller: _scrollController,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 20,
+                          ),
+                          itemCount: _insecticideList.length,
+                          itemBuilder: (context, index) {
+                            final item = _insecticideList[index];
+                            final name = item['name'];
+                            final imageUrl = item['img']['url'];
+                            final categoryId = item['_id'];
+                            final isEven = index % 2 == 0;
 
-                              final widget = isEven
-                                  ? CustomWidget2(
-                                      customBorderColor: const Color(0xff006F54),
+                            final widget =
+                                isEven
+                                    ? CustomWidget2(
+                                      customBorderColor: const Color(
+                                        0xff006F54,
+                                      ),
                                       customColor: const Color(0xff006F54),
                                       text: name,
                                       image: imageUrl,
                                       routeName: '/insecticide-type',
-                                      arguments: {'categoryId': categoryId,'categoryName':name},
+                                      arguments: {
+                                        'categoryId': categoryId,
+                                        'categoryName': name,
+                                      },
                                     )
-                                  : CustomWidget2Reversed(
-                                      customBorderColor: const Color(0xff006F54),
+                                    : CustomWidget2Reversed(
+                                      customBorderColor: const Color(
+                                        0xff006F54,
+                                      ),
                                       customColor: const Color(0xff006F54),
                                       text: name,
                                       image: imageUrl,
                                       routeName: '/insecticide-type',
-                                      arguments: {'categoryId': categoryId,'categoryName':name},
+                                      arguments: {
+                                        'categoryId': categoryId,
+                                        'categoryName': name,
+                                      },
                                     );
 
-                              return Column(
-                                children: [widget, const SizedBox(height: 0)],
-                              );
-                            },
-                          ),
+                            return Column(
+                              children: [widget, const SizedBox(height: 0)],
+                            );
+                          },
+                        ),
               ),
             ],
           ),

@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 
 class AddCommunicationSection extends StatefulWidget {
   final VoidCallback onSaved;
@@ -14,7 +16,8 @@ class AddCommunicationSection extends StatefulWidget {
   });
 
   @override
-  State<AddCommunicationSection> createState() => _AddCommunicationSectionState();
+  State<AddCommunicationSection> createState() =>
+      _AddCommunicationSectionState();
 }
 
 class _AddCommunicationSectionState extends State<AddCommunicationSection> {
@@ -36,7 +39,9 @@ class _AddCommunicationSectionState extends State<AddCommunicationSection> {
     });
 
     final token = await _secureStorage.read(key: 'token');
-    final url = Uri.parse('https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/add-communication-data');
+    final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
+    final url = Uri.parse('$baseUrl/add-communication-data');
 
     try {
       final res = await http.post(
@@ -52,7 +57,9 @@ class _AddCommunicationSectionState extends State<AddCommunicationSection> {
         widget.onSaved(); // Refresh list and close form
       } else {
         final resBody = jsonDecode(res.body);
-        setState(() => _error = resBody['message'] ?? 'Failed to add communication');
+        setState(
+          () => _error = resBody['message'] ?? 'Failed to add communication',
+        );
       }
     } catch (e) {
       setState(() => _error = 'Error: $e');
@@ -86,20 +93,27 @@ class _AddCommunicationSectionState extends State<AddCommunicationSection> {
               const SizedBox(width: 10),
               ElevatedButton.icon(
                 onPressed: _isSaving ? null : _saveCommunication,
-                icon: _isSaving
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      )
-                    : const Icon(Icons.save, color: Colors.white),
-                label: const Text('Save', style: TextStyle(color: Colors.white)),
+                icon:
+                    _isSaving
+                        ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                        : const Icon(Icons.save, color: Colors.white),
+                label: const Text(
+                  'Save',
+                  style: TextStyle(color: Colors.white),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFF7941D),
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
                 ),
               ),
             ],

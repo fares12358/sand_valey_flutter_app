@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as path;
 import 'package:http_parser/http_parser.dart';
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 
 class CartItemCard extends StatefulWidget {
   final String name;
@@ -70,9 +72,9 @@ class _CartItemCardState extends State<CartItemCard> {
     setState(() => _loading = true);
 
     try {
-      final uri = Uri.parse(
-        'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/update-seeds-categories',
-      );
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
+      final uri = Uri.parse('$baseUrl/update-seeds-categories');
 
       final request = http.MultipartRequest('POST', uri);
 
@@ -106,7 +108,10 @@ class _CartItemCardState extends State<CartItemCard> {
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('✅ ${body['message']}',style: TextStyle(color: Colors.white),),
+            content: Text(
+              '✅ ${body['message']}',
+              style: TextStyle(color: Colors.white),
+            ),
             backgroundColor: Color(0xFFF7941D), // Orange color
           ),
         );

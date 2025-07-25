@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 
 class EditableNavItem extends StatefulWidget {
   final String title;
   final String imageUrl;
-  final String uploadApiUrl;
   final String routeName;
   final VoidCallback onImageUpdated; // 👈 New callback
 
@@ -16,7 +17,6 @@ class EditableNavItem extends StatefulWidget {
     super.key,
     required this.title,
     required this.imageUrl,
-    required this.uploadApiUrl,
     required this.routeName,
     required this.onImageUpdated,
   });
@@ -56,7 +56,8 @@ class _EditableNavItemState extends State<EditableNavItem> {
       _message = null;
     });
 
-    final uri = Uri.parse(widget.uploadApiUrl);
+    final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+    final uri = Uri.parse('$baseUrl/update-main-categories');
     final request = http.MultipartRequest("POST", uri);
     request.fields['section'] = widget.title;
 
@@ -81,10 +82,10 @@ class _EditableNavItemState extends State<EditableNavItem> {
           _messageColor = Colors.green;
         });
         widget.onImageUpdated(); // 👈 Refresh main categories
-
       } else {
         setState(() {
-          _message = '❌ Upload failed: ${response.statusCode}\n${responseBody.body}';
+          _message =
+              '❌ Upload failed: ${response.statusCode}\n${responseBody.body}';
           _messageColor = Colors.red;
         });
       }
@@ -136,15 +137,17 @@ class _EditableNavItemState extends State<EditableNavItem> {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: widget.imageUrl.isNotEmpty
-                        ? Image.network(
-                            widget.imageUrl,
-                            width: 50,
-                            height: 50,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => _defaultPlaceholder(),
-                          )
-                        : _defaultPlaceholder(),
+                    child:
+                        widget.imageUrl.isNotEmpty
+                            ? Image.network(
+                              widget.imageUrl,
+                              width: 50,
+                              height: 50,
+                              fit: BoxFit.cover,
+                              errorBuilder:
+                                  (_, __, ___) => _defaultPlaceholder(),
+                            )
+                            : _defaultPlaceholder(),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -180,21 +183,23 @@ class _EditableNavItemState extends State<EditableNavItem> {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        child: _pickedImage != null
-                            ? Image.file(
-                                _pickedImage!,
-                                height: 160,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                              )
-                            : Image.network(
-                                widget.imageUrl,
-                                height: 160,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) =>
-                                    _defaultPlaceholder(height: 160),
-                              ),
+                        child:
+                            _pickedImage != null
+                                ? Image.file(
+                                  _pickedImage!,
+                                  height: 160,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                )
+                                : Image.network(
+                                  widget.imageUrl,
+                                  height: 160,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                  errorBuilder:
+                                      (_, __, ___) =>
+                                          _defaultPlaceholder(height: 160),
+                                ),
                       ),
                       if (_isEditing)
                         Positioned(

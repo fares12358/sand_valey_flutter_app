@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 
 class AccountSettingsSection extends StatefulWidget {
   const AccountSettingsSection({super.key});
@@ -74,7 +76,7 @@ class _AccountSettingsSectionState extends State<AccountSettingsSection> {
     final newUsername = _usernameController.text.trim();
     final newName = _nameController.text.trim();
     final newEmail = _emailController.text.trim();
-
+    final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
     final bool changed =
         newName != _originalName ||
         newUsername != _originalUsername ||
@@ -120,9 +122,7 @@ class _AccountSettingsSectionState extends State<AccountSettingsSection> {
       payload['id'] = id;
 
       final response = await http.put(
-        Uri.parse(
-          "https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/update-user",
-        ),
+        Uri.parse("$baseUrl/update-user"),
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer $token",

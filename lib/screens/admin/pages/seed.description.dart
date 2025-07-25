@@ -2,13 +2,16 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 import 'package:sand_valley/widgets/Admin/seeds_descreption_cart.dart';
 
 class SeedDescriptionAdminPage extends StatefulWidget {
   const SeedDescriptionAdminPage({super.key});
 
   @override
-  State<SeedDescriptionAdminPage> createState() => _SeedDescriptionAdminPageState();
+  State<SeedDescriptionAdminPage> createState() =>
+      _SeedDescriptionAdminPageState();
 }
 
 class _SeedDescriptionAdminPageState extends State<SeedDescriptionAdminPage> {
@@ -28,12 +31,13 @@ class _SeedDescriptionAdminPageState extends State<SeedDescriptionAdminPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_initialized) {
-      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      final args =
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
       if (args != null) {
         _typeId = args['id'] as String;
         _typeName = args['name'] as String;
         _typeImage = args['image'] as String?;
-        
+
         _fetchDescription();
         _initialized = true;
       }
@@ -48,9 +52,9 @@ class _SeedDescriptionAdminPageState extends State<SeedDescriptionAdminPage> {
 
     try {
       final token = await _secureStorage.read(key: 'token');
-      final uri = Uri.parse(
-        'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/get-seeds-description/$_typeId',
-      );
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
+      final uri = Uri.parse('$baseUrl/get-seeds-description/$_typeId');
       final res = await http.get(
         uri,
         headers: {
@@ -92,28 +96,31 @@ class _SeedDescriptionAdminPageState extends State<SeedDescriptionAdminPage> {
   Future<void> _delete() async {
     final ok = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Confirm Delete'),
-        content: const Text('Delete this description?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+      builder:
+          (ctx) => AlertDialog(
+            title: const Text('Confirm Delete'),
+            content: const Text('Delete this description?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                onPressed: () => Navigator.pop(ctx, true),
+                child: const Text('Delete'),
+              ),
+            ],
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
     );
     if (ok != true) return;
 
     try {
       final token = await _secureStorage.read(key: 'token');
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
       final uri = Uri.parse(
-        'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/delete-seeds-description/${_desc!['id']}',
+        '$baseUrl/delete-seeds-description/${_desc!['id']}',
       );
       final res = await http.delete(
         uri,
@@ -145,7 +152,10 @@ class _SeedDescriptionAdminPageState extends State<SeedDescriptionAdminPage> {
       appBar: AppBar(
         title: Text(
           _typeName,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         backgroundColor: const Color(0xFFF7941D),
         leading: IconButton(
@@ -156,40 +166,48 @@ class _SeedDescriptionAdminPageState extends State<SeedDescriptionAdminPage> {
       body: RefreshIndicator(
         color: const Color(0xFFF7941D),
         onRefresh: _fetchDescription,
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: Color(0xFFF7941D)))
-            : _error != null
+        child:
+            _isLoading
+                ? const Center(
+                  child: CircularProgressIndicator(color: Color(0xFFF7941D)),
+                )
+                : _error != null
                 ? ListView(
-                    children: [
-                      const SizedBox(height: 200),
-                      Center(child: Text(_error!, style: const TextStyle(color: Colors.red))),
-                    ],
-                  )
-                : _desc == null
-                    ? ListView(
-                        children: [
-                          const SizedBox(height: 200),
-                          Center(
-                            child: Text(
-                              'No description found',
-                              style: TextStyle(color: Colors.grey[600]),
-                            ),
-                          ),
-                        ],
-                      )
-                    : ListView(
-                        padding: const EdgeInsets.only(bottom: 20),
-                        children: [
-                          SeedsDescriptionCard(
-                            id: _desc!['id']!,
-                            name: _desc!['name']!,
-                            company: _desc!['company']!,
-                            description: _desc!['description']!,
-                            onDelete: _delete,
-                            onUpdate: _fetchDescription,
-                          ),
-                        ],
+                  children: [
+                    const SizedBox(height: 200),
+                    Center(
+                      child: Text(
+                        _error!,
+                        style: const TextStyle(color: Colors.red),
                       ),
+                    ),
+                  ],
+                )
+                : _desc == null
+                ? ListView(
+                  children: [
+                    const SizedBox(height: 200),
+                    Center(
+                      child: Text(
+                        'No description found',
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
+                    ),
+                  ],
+                )
+                : ListView(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  children: [
+                    SeedsDescriptionCard(
+                      id: _desc!['id']!,
+                      name: _desc!['name']!,
+                      company: _desc!['company']!,
+                      description: _desc!['description']!,
+                      onDelete: _delete,
+                      onUpdate: _fetchDescription,
+                    ),
+                  ],
+                ),
       ),
     );
   }

@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 import 'package:sand_valley/widgets/background_container.dart';
 import 'package:sand_valley/widgets/customButton.dart';
 import 'package:sand_valley/widgets/customWidget2.dart';
@@ -36,10 +38,10 @@ class _FertilizerTypeTwoPageState extends State<FertilizerTypeTwoPage> {
   Future<void> _fetchNestedTypes() async {
     setState(() => _isLoading = true);
     try {
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
       final response = await http.get(
-        Uri.parse(
-          'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/get-fertilizer-nested-type/$categoryId/$typeId',
-        ),
+        Uri.parse('$baseUrl/get-fertilizer-nested-type/$categoryId/$typeId'),
       );
       final data = json.decode(response.body);
       setState(() {
@@ -89,7 +91,7 @@ class _FertilizerTypeTwoPageState extends State<FertilizerTypeTwoPage> {
                     Center(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
-                        children:  [
+                        children: [
                           Padding(
                             padding: EdgeInsets.only(bottom: 70),
                             child: Text(

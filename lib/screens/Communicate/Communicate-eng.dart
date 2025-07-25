@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 import 'package:sand_valley/widgets/background_container.dart';
 import 'package:sand_valley/widgets/customButton.dart';
 import 'package:sand_valley/widgets/customWidget2.dart';
@@ -37,7 +39,8 @@ class _EngineerPageState extends State<EngineerPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     id ??= args?['id'];
 
     if (id != null && engineers.isEmpty) {
@@ -47,8 +50,10 @@ class _EngineerPageState extends State<EngineerPage> {
 
   Future<void> _fetchEngineers(String id) async {
     try {
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
       final response = await http.get(
-        Uri.parse('https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/get-communication-eng/$id'),
+        Uri.parse('$baseUrl/get-communication-eng/$id'),
       );
 
       if (response.statusCode == 200) {
@@ -115,24 +120,37 @@ class _EngineerPageState extends State<EngineerPage> {
 
               // Engineers List
               Expanded(
-                child: isLoading
-                    ? const Center(child: CircularProgressIndicator(color: Color(0xff00793F),))
-                    : engineers.isEmpty
+                child:
+                    isLoading
+                        ? const Center(
+                          child: CircularProgressIndicator(
+                            color: Color(0xff00793F),
+                          ),
+                        )
+                        : engineers.isEmpty
                         ? const Center(child: Text('لا يوجد مهندسون حالياً'))
                         : ListView.builder(
-                            controller: _scrollController,
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                            itemCount: engineers.length,
-                            itemBuilder: (context, index) {
-                              final engineer = engineers[index];
-                              final name = engineer['name'] ?? 'بدون اسم';
-                              final image = engineer['img']['url'] ?? 'assets/images/seeds-img.png';
-                              final phone = engineer['phone'] ?? 'غير متوفر';
-                              final isEven = index % 2 == 0;
+                          controller: _scrollController,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 20,
+                          ),
+                          itemCount: engineers.length,
+                          itemBuilder: (context, index) {
+                            final engineer = engineers[index];
+                            final name = engineer['name'] ?? 'بدون اسم';
+                            final image =
+                                engineer['img']['url'] ??
+                                'assets/images/seeds-img.png';
+                            final phone = engineer['phone'] ?? 'غير متوفر';
+                            final isEven = index % 2 == 0;
 
-                              final widget = isEven
-                                  ? CustomWidget2(
-                                      customBorderColor: const Color(0xff006F54),
+                            final widget =
+                                isEven
+                                    ? CustomWidget2(
+                                      customBorderColor: const Color(
+                                        0xff006F54,
+                                      ),
                                       customColor: const Color(0xff00793F),
                                       text: name,
                                       image: image,
@@ -143,8 +161,10 @@ class _EngineerPageState extends State<EngineerPage> {
                                         'phone': phone,
                                       },
                                     )
-                                  : CustomWidget2Reversed(
-                                      customBorderColor: const Color(0xff006F54),
+                                    : CustomWidget2Reversed(
+                                      customBorderColor: const Color(
+                                        0xff006F54,
+                                      ),
                                       customColor: const Color(0xff00793F),
                                       text: name,
                                       image: image,
@@ -156,11 +176,11 @@ class _EngineerPageState extends State<EngineerPage> {
                                       },
                                     );
 
-                              return Column(
-                                children: [widget, const SizedBox(height: 10)],
-                              );
-                            },
-                          ),
+                            return Column(
+                              children: [widget, const SizedBox(height: 10)],
+                            );
+                          },
+                        ),
               ),
             ],
           ),

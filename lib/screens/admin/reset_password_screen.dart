@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 import 'dart:convert';
 import 'package:sand_valley/widgets/background_container.dart';
 
@@ -73,10 +75,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     });
 
     try {
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
       final response = await http.post(
-        Uri.parse(
-          'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/reset-password',
-        ),
+        Uri.parse('$baseUrl/reset-password'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'input': input, 'otp': otp, 'newPassword': password}),
       );
@@ -130,7 +132,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Reset Password', style: TextStyle(color: Colors.white),),
+        title: const Text(
+          'Reset Password',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Color(0xFFF7941D),
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -145,7 +150,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 children: [
                   const Text(
                     'Enter your new password',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold ,color: Color(0xFFF7941D)),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFFF7941D),
+                    ),
                   ),
                   const SizedBox(height: 20),
                   TextField(

@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 import 'package:sand_valley/widgets/Admin/add_nested_fertilizer_type_section.dart';
 import 'package:sand_valley/widgets/Admin/fertilizer_nested_type_card.dart';
 
@@ -46,8 +48,10 @@ class _FertilizerNestedTypePageState extends State<FertilizerNestedTypePage> {
     setState(() => _loading = true);
 
     try {
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
       final url = Uri.parse(
-        'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/get-fertilizer-nested-type/$categoryId/$typeId',
+        '$baseUrl/get-fertilizer-nested-type/$categoryId/$typeId',
       );
       final response = await http.get(url);
 

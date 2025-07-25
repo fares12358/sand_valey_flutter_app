@@ -2,6 +2,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 
 class SeedsDescriptionCard extends StatefulWidget {
   final String id;
@@ -90,9 +92,9 @@ class _SeedsDescriptionCardState extends State<SeedsDescriptionCard> {
     setState(() => _loading = true);
 
     try {
-      final uri = Uri.parse(
-        'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/update-seeds-description/${widget.id}',
-      );
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
+      final uri = Uri.parse('$baseUrl/update-seeds-description/${widget.id}');
       final response = await http.put(
         uri,
         headers: {'Content-Type': 'application/json'},
@@ -134,7 +136,9 @@ class _SeedsDescriptionCardState extends State<SeedsDescriptionCard> {
   Widget build(BuildContext context) {
     return AnimatedPadding(
       duration: const Duration(milliseconds: 100),
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
         padding: const EdgeInsets.all(16),
@@ -158,19 +162,23 @@ class _SeedsDescriptionCardState extends State<SeedsDescriptionCard> {
                 const Icon(Icons.grass, color: Color(0xFFF7941D)),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: _editing
-                      ? TextField(
-                          controller: _nameController,
-                          enabled: !_loading,
-                          decoration: const InputDecoration(
-                            labelText: 'Name',
-                            border: OutlineInputBorder(),
+                  child:
+                      _editing
+                          ? TextField(
+                            controller: _nameController,
+                            enabled: !_loading,
+                            decoration: const InputDecoration(
+                              labelText: 'Name',
+                              border: OutlineInputBorder(),
+                            ),
+                          )
+                          : Text(
+                            widget.name,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        )
-                      : Text(
-                          widget.name,
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
                 ),
               ],
             ),
@@ -184,36 +192,37 @@ class _SeedsDescriptionCardState extends State<SeedsDescriptionCard> {
                 const Icon(Icons.business, size: 20, color: Colors.grey),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: _editing
-                      ? TextField(
-                          controller: _companyController,
-                          enabled: !_loading,
-                          decoration: const InputDecoration(
-                            labelText: 'Company',
-                            border: OutlineInputBorder(),
-                          ),
-                        )
-                      : RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: 'Company: ',
-                                style: TextStyle(
-                                  color: Colors.orange.shade700,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
+                  child:
+                      _editing
+                          ? TextField(
+                            controller: _companyController,
+                            enabled: !_loading,
+                            decoration: const InputDecoration(
+                              labelText: 'Company',
+                              border: OutlineInputBorder(),
+                            ),
+                          )
+                          : RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: 'Company: ',
+                                  style: TextStyle(
+                                    color: Colors.orange.shade700,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
                                 ),
-                              ),
-                              TextSpan(
-                                text: widget.company,
-                                style: const TextStyle(
-                                  color: Colors.black87,
-                                  fontSize: 14,
+                                TextSpan(
+                                  text: widget.company,
+                                  style: const TextStyle(
+                                    color: Colors.black87,
+                                    fontSize: 14,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
                 ),
               ],
             ),
@@ -227,51 +236,52 @@ class _SeedsDescriptionCardState extends State<SeedsDescriptionCard> {
                 const Icon(Icons.description, size: 20, color: Colors.grey),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: _editing
-                      ? TextField(
-                          controller: _descriptionController,
-                          enabled: !_loading,
-                          maxLines: 10,
-                          decoration: const InputDecoration(
-                            labelText: 'Description',
-                            border: OutlineInputBorder(),
-                          ),
-                        )
-                      : Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF9F9F9),
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(color: Colors.grey.shade300),
-                          ),
-                          child: ConstrainedBox(
-                            constraints: const BoxConstraints(maxHeight: 120),
-                            child: SingleChildScrollView(
-                              physics: const BouncingScrollPhysics(),
-                              child: RichText(
-                                text: TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text: 'Description: ',
-                                      style: TextStyle(
-                                        color: Colors.orange.shade700,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
+                  child:
+                      _editing
+                          ? TextField(
+                            controller: _descriptionController,
+                            enabled: !_loading,
+                            maxLines: 10,
+                            decoration: const InputDecoration(
+                              labelText: 'Description',
+                              border: OutlineInputBorder(),
+                            ),
+                          )
+                          : Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF9F9F9),
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(color: Colors.grey.shade300),
+                            ),
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxHeight: 120),
+                              child: SingleChildScrollView(
+                                physics: const BouncingScrollPhysics(),
+                                child: RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: 'Description: ',
+                                        style: TextStyle(
+                                          color: Colors.orange.shade700,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                        ),
                                       ),
-                                    ),
-                                    TextSpan(
-                                      text: widget.description,
-                                      style: const TextStyle(
-                                        color: Colors.black87,
-                                        fontSize: 14,
+                                      TextSpan(
+                                        text: widget.description,
+                                        style: const TextStyle(
+                                          color: Colors.black87,
+                                          fontSize: 14,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
                 ),
               ],
             ),
@@ -279,7 +289,9 @@ class _SeedsDescriptionCardState extends State<SeedsDescriptionCard> {
 
             // Buttons or Loader
             if (_loading)
-              const Center(child: CircularProgressIndicator(color: Color(0xFFF7941D)))
+              const Center(
+                child: CircularProgressIndicator(color: Color(0xFFF7941D)),
+              )
             else
               Wrap(
                 spacing: 8,
@@ -290,26 +302,34 @@ class _SeedsDescriptionCardState extends State<SeedsDescriptionCard> {
                     ElevatedButton.icon(
                       onPressed: _cancelEdit,
                       icon: const Icon(Icons.cancel),
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey,
+                      ),
                       label: const Text('Cancel'),
                     ),
                     ElevatedButton.icon(
                       onPressed: _saveEdit,
                       icon: const Icon(Icons.save),
-                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFF7941D)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFF7941D),
+                      ),
                       label: const Text('Save'),
                     ),
                   ] else ...[
                     ElevatedButton.icon(
                       onPressed: _startEdit,
                       icon: const Icon(Icons.edit),
-                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFF7941D)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFF7941D),
+                      ),
                       label: const Text('Edit'),
                     ),
                     ElevatedButton.icon(
                       onPressed: widget.onDelete,
                       icon: const Icon(Icons.delete),
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
                       label: const Text('Delete'),
                     ),
                   ],

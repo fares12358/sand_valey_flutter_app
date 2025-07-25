@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 
 class AddInsecticideSection extends StatefulWidget {
   final VoidCallback onDataAdded;
@@ -35,15 +37,19 @@ class _AddInsecticideSectionState extends State<AddInsecticideSection> {
     if (name.isEmpty || _selectedImage == null) return;
 
     setState(() => _isLoading = true);
+    final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
 
-    final uri = Uri.parse('https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/add-insecticide-data');
-    final request = http.MultipartRequest('POST', uri)
-      ..fields['name'] = name
-      ..files.add(await http.MultipartFile.fromPath(
-        'image',
-        _selectedImage!.path,
-        filename: p.basename(_selectedImage!.path),
-      ));
+    final uri = Uri.parse('$baseUrl/add-insecticide-data');
+    final request =
+        http.MultipartRequest('POST', uri)
+          ..fields['name'] = name
+          ..files.add(
+            await http.MultipartFile.fromPath(
+              'image',
+              _selectedImage!.path,
+              filename: p.basename(_selectedImage!.path),
+            ),
+          );
 
     try {
       final response = await request.send();
@@ -100,19 +106,22 @@ class _AddInsecticideSectionState extends State<AddInsecticideSection> {
                 color: const Color(0xFFF7F7F7),
                 border: Border.all(color: Colors.grey.shade300),
               ),
-              child: _selectedImage == null
-                  ? const Center(
-                      child: Icon(Icons.image, size: 40, color: Colors.grey),
-                    )
-                  : ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.file(_selectedImage!, fit: BoxFit.cover),
-                    ),
+              child:
+                  _selectedImage == null
+                      ? const Center(
+                        child: Icon(Icons.image, size: 40, color: Colors.grey),
+                      )
+                      : ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.file(_selectedImage!, fit: BoxFit.cover),
+                      ),
             ),
           ),
           const SizedBox(height: 16),
           if (_isLoading)
-            const Center(child: CircularProgressIndicator(color: Color(0xFFF7941D)))
+            const Center(
+              child: CircularProgressIndicator(color: Color(0xFFF7941D)),
+            )
           else
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -121,18 +130,30 @@ class _AddInsecticideSectionState extends State<AddInsecticideSection> {
                   onPressed: _uploadInsecticide,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFF7941D),
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
                   ),
-                  child: const Text('Save', style: TextStyle(color: Colors.white)),
+                  child: const Text(
+                    'Save',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
                 const SizedBox(width: 12),
                 ElevatedButton(
                   onPressed: widget.onCancel,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.grey,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
                   ),
-                  child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ],
             ),

@@ -6,6 +6,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 import 'package:sand_valley/widgets/Admin/add_engineer_section.dart';
 
 class CommunicationEngPage extends StatefulWidget {
@@ -46,10 +48,10 @@ class _CommunicationEngPageState extends State<CommunicationEngPage> {
 
     try {
       final token = await _secureStorage.read(key: 'token');
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
       final res = await http.get(
-        Uri.parse(
-          'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/get-communication-eng/$communicationId',
-        ),
+        Uri.parse('$baseUrl/get-communication-eng/$communicationId'),
         headers: {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
@@ -113,8 +115,10 @@ class _CommunicationEngPageState extends State<CommunicationEngPage> {
     final phone = filtered[index]['phoneController'].text.trim();
     final imageFile = filtered[index]['pickedImage'];
     final token = await _secureStorage.read(key: 'token');
+    final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
     final url = Uri.parse(
-      'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/update-communication-eng/$communicationId/${filtered[index]['id']}',
+      '$baseUrl/update-communication-eng/$communicationId/${filtered[index]['id']}',
     );
 
     final request =
@@ -148,8 +152,10 @@ class _CommunicationEngPageState extends State<CommunicationEngPage> {
   Future<void> _deleteEngineer(int index) async {
     setState(() => filtered[index]['isDeleting'] = true);
     final token = await _secureStorage.read(key: 'token');
+    final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
     final url = Uri.parse(
-      'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/delete-communication-eng/$communicationId/${filtered[index]['id']}',
+      '$baseUrl/delete-communication-eng/$communicationId/${filtered[index]['id']}',
     );
 
     try {

@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 import 'package:sand_valley/widgets/background_container.dart';
 
 class OtpScreen extends StatefulWidget {
@@ -67,10 +69,9 @@ class _OtpScreenState extends State<OtpScreen> {
     });
 
     try {
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
       final response = await http.post(
-        Uri.parse(
-          'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/verify-otp',
-        ),
+        Uri.parse('$baseUrl/verify-otp'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'input': input, 'otp': _otp}),
       );
@@ -164,7 +165,7 @@ class _OtpScreenState extends State<OtpScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Verify OTP', style: TextStyle(color: Colors.white),),
+        title: const Text('Verify OTP', style: TextStyle(color: Colors.white)),
         backgroundColor: Color(0xFFF7941D),
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),

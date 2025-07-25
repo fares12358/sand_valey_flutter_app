@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 import 'package:sand_valley/widgets/Admin/add_type_section.dart';
 import 'package:sand_valley/widgets/Admin/type_item_card.dart';
 
@@ -36,10 +38,9 @@ class _InsecticideTypeAdminPageState extends State<InsecticideTypeAdminPage> {
     });
 
     try {
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
       final response = await http.get(
-        Uri.parse(
-          "https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/get-insecticide-type/$id",
-        ),
+        Uri.parse("$baseUrl/get-insecticide-type/$id"),
       );
 
       if (response.statusCode == 200) {
@@ -47,17 +48,18 @@ class _InsecticideTypeAdminPageState extends State<InsecticideTypeAdminPage> {
         final List data = body['data'];
 
         setState(() {
-          types = data
-              .map<Map<String, dynamic>>(
-                (item) => {
-                  'id': item['_id'],
-                  'name': item['name'],
-                  'description': item['description'],
-                  'company': item['company'] ?? '',
-                  'imageUrl': item['img']['url'],
-                },
-              )
-              .toList();
+          types =
+              data
+                  .map<Map<String, dynamic>>(
+                    (item) => {
+                      'id': item['_id'],
+                      'name': item['name'],
+                      'description': item['description'],
+                      'company': item['company'] ?? '',
+                      'imageUrl': item['img']['url'],
+                    },
+                  )
+                  .toList();
         });
       } else {
         print("❌ Failed to fetch data: ${response.statusCode}");
@@ -123,10 +125,14 @@ class _InsecticideTypeAdminPageState extends State<InsecticideTypeAdminPage> {
                               decoration: InputDecoration(
                                 hintText: 'Search insecticide type...',
                                 fillColor: Colors.white,
-                                prefixIcon: const Icon(Icons.search,
-                                    color: Color(0xFFF7941D)),
+                                prefixIcon: const Icon(
+                                  Icons.search,
+                                  color: Color(0xFFF7941D),
+                                ),
                                 contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 16),
+                                  horizontal: 16,
+                                  vertical: 16,
+                                ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16),
                                   borderSide: BorderSide.none,
@@ -141,8 +147,10 @@ class _InsecticideTypeAdminPageState extends State<InsecticideTypeAdminPage> {
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   ElevatedButton.icon(
-                                    onPressed: () =>
-                                        setState(() => showAddSection = true),
+                                    onPressed:
+                                        () => setState(
+                                          () => showAddSection = true,
+                                        ),
                                     icon: const Icon(Icons.add),
                                     label: const Text('Add'),
                                     style: ElevatedButton.styleFrom(
@@ -154,8 +162,9 @@ class _InsecticideTypeAdminPageState extends State<InsecticideTypeAdminPage> {
                             else
                               AddTypeSection(
                                 categoryId: id,
-                                onCancel: () =>
-                                    setState(() => showAddSection = false),
+                                onCancel:
+                                    () =>
+                                        setState(() => showAddSection = false),
                                 onSave: () {
                                   setState(() => showAddSection = false);
                                   _fetchInsecticideTypes(id); // Refresh list
@@ -167,56 +176,57 @@ class _InsecticideTypeAdminPageState extends State<InsecticideTypeAdminPage> {
 
                       // 📦 Type List or Loader
                       Expanded(
-                        child: isLoading
-                            ? const Center(
-                                child: CircularProgressIndicator(
-                                  color: Color(0xFFF7941D),
-                                ),
-                              )
-                            : _filteredTypes.isEmpty
-                                ? Center(
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: const [
-                                        Icon(
-                                          Icons.bug_report_outlined,
-                                          size: 40,
-                                          color: Colors.grey,
-                                        ),
-                                        SizedBox(height: 12),
-                                        Text(
-                                          'لا توجد أنواع حالياً',
-                                          style:
-                                              TextStyle(color: Colors.grey),
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                : ListView.builder(
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    shrinkWrap: true,
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16),
-                                    itemCount: _filteredTypes.length,
-                                    itemBuilder: (context, index) {
-                                      final item = _filteredTypes[index];
-                                      return Padding(
-                                        padding:
-                                            const EdgeInsets.only(bottom: 12),
-                                        child: TypeItemCard(
-                                          typeName: item['name'],
-                                          description: item['description'],
-                                          company: item['company'],
-                                          imageUrl: item['imageUrl'],
-                                          catId: id,
-                                          typeId: item['id'],
-                                          onRefresh: () =>
-                                              _fetchInsecticideTypes(id),
-                                        ),
-                                      );
-                                    },
+                        child:
+                            isLoading
+                                ? const Center(
+                                  child: CircularProgressIndicator(
+                                    color: Color(0xFFF7941D),
                                   ),
+                                )
+                                : _filteredTypes.isEmpty
+                                ? Center(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: const [
+                                      Icon(
+                                        Icons.bug_report_outlined,
+                                        size: 40,
+                                        color: Colors.grey,
+                                      ),
+                                      SizedBox(height: 12),
+                                      Text(
+                                        'لا توجد أنواع حالياً',
+                                        style: TextStyle(color: Colors.grey),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                                : ListView.builder(
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                  itemCount: _filteredTypes.length,
+                                  itemBuilder: (context, index) {
+                                    final item = _filteredTypes[index];
+                                    return Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 12,
+                                      ),
+                                      child: TypeItemCard(
+                                        typeName: item['name'],
+                                        description: item['description'],
+                                        company: item['company'],
+                                        imageUrl: item['imageUrl'],
+                                        catId: id,
+                                        typeId: item['id'],
+                                        onRefresh:
+                                            () => _fetchInsecticideTypes(id),
+                                      ),
+                                    );
+                                  },
+                                ),
                       ),
                     ],
                   ),

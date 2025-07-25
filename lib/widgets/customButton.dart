@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
-  const CustomButton({super.key, required this.icon, this.routeName,this.buttonColor});
+  const CustomButton({
+    super.key,
+    required this.icon,
+    this.routeName,
+    this.buttonColor,
+  });
 
   final Widget icon; // Can be Icon or Image
   final String? routeName;
@@ -25,9 +30,7 @@ class CustomButton extends StatelessWidget {
       ),
       child: IconButton(
         onPressed: () {
-          if (routeName != null) {
-            Navigator.pop(context, routeName!);
-          }
+          Navigator.pop(context);
         },
         icon: icon,
       ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 import 'dart:convert';
 
 import 'package:sand_valley/widgets/background_container.dart';
@@ -39,10 +41,10 @@ class _FertilizerMainPage extends State<FertilizerMainPage> {
   Future<void> _fetchFertilizerData() async {
     setState(() => _isLoading = true);
     try {
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
       final response = await http.get(
-        Uri.parse(
-          "https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/get-fertilizer-data",
-        ),
+        Uri.parse("$baseUrl/get-fertilizer-data"),
       );
 
       final data = json.decode(response.body);

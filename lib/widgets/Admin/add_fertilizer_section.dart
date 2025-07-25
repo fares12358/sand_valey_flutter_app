@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:mime/mime.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 
 class AddFertilizerSection extends StatefulWidget {
   final Function(Map<String, dynamic>) onSave;
@@ -50,8 +52,10 @@ class _AddFertilizerSectionState extends State<AddFertilizerSection> {
     setState(() => _isLoading = true);
 
     try {
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
       final uri = Uri.parse(
-        'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/add-fertilizer-data',
+        '$baseUrl/add-fertilizer-data',
       );
       final request = http.MultipartRequest('POST', uri);
       request.fields['name'] = name;

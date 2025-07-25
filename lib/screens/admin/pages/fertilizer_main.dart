@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 import 'package:sand_valley/widgets/Admin/add_fertilizer_section.dart';
 import 'package:sand_valley/widgets/Admin/fertilizer_card.dart';
 
@@ -28,11 +30,9 @@ class _FertilizerAdminPageState extends State<FertilizerAdminPage> {
   Future<void> _fetchFertilizers() async {
     setState(() => _isLoading = true);
     try {
-      final res = await http.get(
-        Uri.parse(
-          'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/get-fertilizer-data',
-        ),
-      );
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
+      final res = await http.get(Uri.parse('$baseUrl/get-fertilizer-data'));
       if (res.statusCode == 200) {
         final body = json.decode(res.body);
         final List data = body['data'] ?? [];
@@ -115,7 +115,8 @@ class _FertilizerAdminPageState extends State<FertilizerAdminPage> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: _orange,
                             ),
-                            onPressed: () => setState(() => _showAddSection = true),
+                            onPressed:
+                                () => setState(() => _showAddSection = true),
                           ),
                         ),
                       ),

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 
 class CartInsecticideItem extends StatefulWidget {
   final String id;
@@ -58,10 +60,9 @@ class _CartInsecticideItemState extends State<CartInsecticideItem> {
     if (name.isEmpty) return;
 
     setState(() => isLoading = true);
+    final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
 
-    final uri = Uri.parse(
-      'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/update-insecticide-data',
-    );
+    final uri = Uri.parse('$baseUrl/update-insecticide-data');
 
     final request =
         http.MultipartRequest('POST', uri)
@@ -105,9 +106,9 @@ class _CartInsecticideItemState extends State<CartInsecticideItem> {
   }
 
   Future<void> _deleteItem() async {
-    final uri = Uri.parse(
-      'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/delete-insecticide-data/${widget.id}',
-    );
+    final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
+    final uri = Uri.parse('$baseUrl/delete-insecticide-data/${widget.id}');
 
     setState(() => isLoading = true);
 
@@ -185,7 +186,11 @@ class _CartInsecticideItemState extends State<CartInsecticideItem> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               child:
                   isLoading
-                      ? const Center(child: CircularProgressIndicator(color: Color(0xFFF7941D)))
+                      ? const Center(
+                        child: CircularProgressIndicator(
+                          color: Color(0xFFF7941D),
+                        ),
+                      )
                       : Column(
                         children: [
                           TextField(

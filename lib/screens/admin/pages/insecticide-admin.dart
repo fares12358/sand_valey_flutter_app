@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 import 'package:sand_valley/widgets/Admin/add_insecticide_section.dart';
 import 'package:sand_valley/widgets/Admin/cart_insecticide_item.dart';
 import 'package:http/http.dart' as http;
@@ -26,24 +28,25 @@ class _InsecticideAdminState extends State<InsecticideAdmin> {
   Future<void> _fetchInsecticides() async {
     setState(() => _isLoading = true);
     try {
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
       final response = await http.get(
-        Uri.parse(
-          'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/get-insecticide-data',
-        ),
+        Uri.parse('$baseUrl/get-insecticide-data'),
       );
       final data = json.decode(response.body);
       final List fetched = data['data']['data'] ?? [];
 
       setState(() {
-        _insecticides = fetched
-            .map<Map<String, dynamic>>(
-              (item) => {
-                'id': item['_id'],
-                'name': item['name'],
-                'image': item['img']['url'],
-              },
-            )
-            .toList();
+        _insecticides =
+            fetched
+                .map<Map<String, dynamic>>(
+                  (item) => {
+                    'id': item['_id'],
+                    'name': item['name'],
+                    'image': item['img']['url'],
+                  },
+                )
+                .toList();
       });
     } catch (e) {
       debugPrint('Error fetching: $e');
@@ -85,7 +88,9 @@ class _InsecticideAdminState extends State<InsecticideAdmin> {
                     // Search
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                       child: TextField(
                         controller: _searchController,
                         onChanged: (_) => setState(() {}),
@@ -107,15 +112,13 @@ class _InsecticideAdminState extends State<InsecticideAdmin> {
 
                     if (!_showAddSection)
                       Padding(
-                        padding:
-                            const EdgeInsets.only(right: 16.0, bottom: 8),
+                        padding: const EdgeInsets.only(right: 16.0, bottom: 8),
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: ElevatedButton.icon(
-                            onPressed: () =>
-                                setState(() => _showAddSection = true),
-                            icon:
-                                const Icon(Icons.add, color: Colors.white),
+                            onPressed:
+                                () => setState(() => _showAddSection = true),
+                            icon: const Icon(Icons.add, color: Colors.white),
                             label: const Text(
                               'Add',
                               style: TextStyle(color: Colors.white),
@@ -137,8 +140,7 @@ class _InsecticideAdminState extends State<InsecticideAdmin> {
                           setState(() => _showAddSection = false);
                           await _fetchInsecticides();
                         },
-                        onCancel: () =>
-                            setState(() => _showAddSection = false),
+                        onCancel: () => setState(() => _showAddSection = false),
                       ),
 
                     const SizedBox(height: 10),

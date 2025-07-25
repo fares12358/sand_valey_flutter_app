@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 
 class AdminLoginScreen extends StatefulWidget {
   const AdminLoginScreen({super.key});
@@ -20,17 +22,15 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
   bool _obscurePassword = true;
   String? _errorMessage;
 
-
   Future<void> _login() async {
+    final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
     if (_formKey.currentState!.validate()) {
       setState(() {
         isLoading = true;
         _errorMessage = null;
       });
 
-      final url = Uri.parse(
-        'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/login',
-      );
+      final url = Uri.parse('$baseUrl/login');
 
       try {
         final response = await http.post(
@@ -123,8 +123,8 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                       keyboardType: TextInputType.emailAddress,
                       style: const TextStyle(color: Colors.black),
                       decoration: _inputDecoration('Email'),
-                      validator: (value) =>
-                          value!.isEmpty ? 'Enter your email' : null,
+                      validator:
+                          (value) => value!.isEmpty ? 'Enter your email' : null,
                     ),
                     const SizedBox(height: 20),
 
@@ -148,8 +148,9 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                           },
                         ),
                       ),
-                      validator: (value) =>
-                          value!.isEmpty ? 'Enter your password' : null,
+                      validator:
+                          (value) =>
+                              value!.isEmpty ? 'Enter your password' : null,
                     ),
                     const SizedBox(height: 10),
 
@@ -158,12 +159,15 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                       alignment: Alignment.centerRight,
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.pushNamed(context, '/admin-forgot-password');
+                          Navigator.pushNamed(
+                            context,
+                            '/admin-forgot-password',
+                          );
                         },
                         child: const Text(
                           'Forgot Password?',
                           style: TextStyle(
-                          color: Color(0xFFF7941D),
+                            color: Color(0xFFF7941D),
                             fontSize: 14,
                           ),
                         ),
@@ -187,7 +191,9 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                         backgroundColor: const Color(0xFFF7941D),
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 40, vertical: 8),
+                          horizontal: 40,
+                          vertical: 8,
+                        ),
                         elevation: 0,
                         splashFactory: NoSplash.splashFactory,
                         shape: RoundedRectangleBorder(

@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 
 class AddNestedFertilizerTypeSection extends StatefulWidget {
   final String parentId; // this is typeId
@@ -50,18 +52,20 @@ class _AddNestedFertilizerTypeSectionState
 
     try {
       setState(() => _loading = true);
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
 
-      final uri = Uri.parse(
-        'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/add-fertilizer-nested-type',
-      );
+      final uri = Uri.parse('$baseUrl/add-fertilizer-nested-type');
 
-      final request = http.MultipartRequest('POST', uri)
-        ..fields['categoryId'] = widget.categoryId
-        ..fields['typeId'] = widget.parentId
-        ..fields['name'] = _nameCtrl.text.trim()
-        ..fields['company'] = _companyCtrl.text.trim()
-        ..fields['description'] = _descCtrl.text.trim()
-        ..files.add(await http.MultipartFile.fromPath('image', _pickedImage!.path));
+      final request =
+          http.MultipartRequest('POST', uri)
+            ..fields['categoryId'] = widget.categoryId
+            ..fields['typeId'] = widget.parentId
+            ..fields['name'] = _nameCtrl.text.trim()
+            ..fields['company'] = _companyCtrl.text.trim()
+            ..fields['description'] = _descCtrl.text.trim()
+            ..files.add(
+              await http.MultipartFile.fromPath('image', _pickedImage!.path),
+            );
 
       final response = await request.send();
       final body = await response.stream.bytesToString();
@@ -124,18 +128,19 @@ class _AddNestedFertilizerTypeSectionState
                 borderRadius: BorderRadius.circular(8),
                 color: Colors.grey[50],
               ),
-              child: _pickedImage != null
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.file(
-                        _pickedImage!,
-                        fit: BoxFit.cover,
+              child:
+                  _pickedImage != null
+                      ? ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.file(_pickedImage!, fit: BoxFit.cover),
+                      )
+                      : const Center(
+                        child: Icon(
+                          Icons.add_a_photo,
+                          size: 40,
+                          color: Colors.grey,
+                        ),
                       ),
-                    )
-                  : const Center(
-                      child: Icon(Icons.add_a_photo,
-                          size: 40, color: Colors.grey),
-                    ),
             ),
           ),
 
@@ -151,19 +156,21 @@ class _AddNestedFertilizerTypeSectionState
               const SizedBox(width: 8),
               ElevatedButton(
                 onPressed: _loading ? null : _submit,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                ),
-                child: _loading
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+                child:
+                    _loading
+                        ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                        : const Text(
+                          'Save',
+                          style: TextStyle(color: Colors.white),
                         ),
-                      )
-                    : const Text('Save', style: TextStyle(color: Colors.white)),
               ),
             ],
           ),

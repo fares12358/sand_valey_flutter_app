@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 import 'package:sand_valley/widgets/Admin/seeds-add_type_section.dart';
 import 'package:sand_valley/widgets/Admin/seeds-type-cart.dart';
 
@@ -48,10 +50,10 @@ class _SeedAdminPageState extends State<SeedTypeAdminPage> {
     });
     try {
       final token = await _secureStorage.read(key: 'token');
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
       final res = await http.get(
-        Uri.parse(
-          'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/get-seeds-type/$categoryId',
-        ),
+        Uri.parse('$baseUrl/get-seeds-type/$categoryId'),
         headers: {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
@@ -120,9 +122,9 @@ class _SeedAdminPageState extends State<SeedTypeAdminPage> {
     setState(() => _deleting = true);
 
     final token = await _secureStorage.read(key: 'token');
-    final url = Uri.parse(
-      'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/delete-seeds-type/$id',
-    );
+    final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
+    final url = Uri.parse('$baseUrl/delete-seeds-type/$id');
 
     try {
       final res = await http.delete(

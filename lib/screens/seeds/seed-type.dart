@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 import 'package:sand_valley/widgets/background_container.dart';
 import 'package:sand_valley/widgets/customButton.dart';
 import 'package:sand_valley/widgets/customWidget2.dart';
@@ -62,10 +64,9 @@ class _SeedTypeState extends State<SeedType> {
         isLoading = true;
         error = null;
       });
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
 
-      final uri = Uri.parse(
-        'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/get-seeds-type/$id',
-      );
+      final uri = Uri.parse('$baseUrl/get-seeds-type/$id');
       final response = await http.get(uri);
 
       if (response.statusCode == 200) {
@@ -234,7 +235,8 @@ class _SeedTypeState extends State<SeedType> {
                                               'description':
                                                   item['description']?['description'] ??
                                                   '',
-                                              'parentImage':item['img']?['url'],
+                                              'parentImage':
+                                                  item['img']?['url'],
                                             },
                                           )
                                           : CustomWidget2Reversed(
@@ -259,7 +261,8 @@ class _SeedTypeState extends State<SeedType> {
                                               'description':
                                                   item['description']?['description'] ??
                                                   '',
-                                              'parentImage': item['img']?['url'],
+                                              'parentImage':
+                                                  item['img']?['url'],
                                             },
                                           );
 

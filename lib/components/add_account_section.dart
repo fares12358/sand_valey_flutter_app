@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 
 class AddAccountSection extends StatefulWidget {
   final VoidCallback? onUserAdded;
@@ -16,7 +19,6 @@ class _AddAccountSectionState extends State<AddAccountSection> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
   bool _isCreating = false;
   bool _passwordVisible = false;
   String? _createUserMessage;
@@ -27,6 +29,10 @@ class _AddAccountSectionState extends State<AddAccountSection> {
     final name = _nameController.text.trim();
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
+    final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+    const storage = FlutterSecureStorage();
+
+    final token = await storage.read(key: "token");
 
     if (username.isEmpty || name.isEmpty || email.isEmpty || password.isEmpty) {
       setState(() {
@@ -44,10 +50,11 @@ class _AddAccountSectionState extends State<AddAccountSection> {
 
     try {
       final response = await http.post(
-        Uri.parse(
-          "https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/register",
-        ),
-        headers: {"Content-Type": "application/json"},
+        Uri.parse("$baseUrl/register"),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
         body: jsonEncode({
           "username": username,
           "name": name,

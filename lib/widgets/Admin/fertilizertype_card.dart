@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:mime/mime.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart' as p;
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 
 const _orange = Color(0xFFF7941D);
 
@@ -55,9 +57,9 @@ class _TypeCardState extends State<FertilizerTypeCard> {
   Future<void> _save() async {
     setState(() => _loading = true);
     try {
-      final uri = Uri.parse(
-        'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/update-fertilizer-type',
-      );
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
+      final uri = Uri.parse('$baseUrl/update-fertilizer-type');
       final req =
           http.MultipartRequest('POST', uri)
             ..fields['name'] = _nameCtrl.text.trim()
@@ -118,8 +120,10 @@ class _TypeCardState extends State<FertilizerTypeCard> {
 
     setState(() => _loading = true);
     try {
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
       final uri = Uri.parse(
-        'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/delete-fertilizer-type/${widget.categoryId}/${widget.data['id']}',
+        '$baseUrl/delete-fertilizer-type/${widget.categoryId}/${widget.data['id']}',
       );
       final rsp = await http.delete(uri);
       if (rsp.statusCode == 200) widget.onDelete();

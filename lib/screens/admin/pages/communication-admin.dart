@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 import 'package:sand_valley/widgets/Admin/add_communication_section.dart';
 
 class CommunicationAdminPage extends StatefulWidget {
@@ -40,10 +42,10 @@ class _CommunicationAdminPageState extends State<CommunicationAdminPage> {
 
     try {
       final token = await _secureStorage.read(key: 'token');
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
       final res = await http.get(
-        Uri.parse(
-          'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/get-communication-data',
-        ),
+        Uri.parse('$baseUrl/get-communication-data'),
         headers: {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
@@ -125,9 +127,9 @@ class _CommunicationAdminPageState extends State<CommunicationAdminPage> {
     setState(() => loadingMap[id] = true);
 
     final token = await _secureStorage.read(key: 'token');
-    final url = Uri.parse(
-      'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/delete-communication-data/$id',
-    );
+    final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
+    final url = Uri.parse('$baseUrl/delete-communication-data/$id');
 
     try {
       final res = await http.delete(
@@ -165,11 +167,10 @@ class _CommunicationAdminPageState extends State<CommunicationAdminPage> {
     }
 
     setState(() => loadingMap[id] = true);
+    final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
 
     final token = await _secureStorage.read(key: 'token');
-    final url = Uri.parse(
-      'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/update-communication-data',
-    );
+    final url = Uri.parse('$baseUrl/update-communication-data');
 
     try {
       final res = await http.post(

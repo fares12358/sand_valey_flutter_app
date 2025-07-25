@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 
 class AddCategorySection extends StatefulWidget {
   final VoidCallback onSaved;
@@ -33,9 +35,18 @@ class _AddCategorySectionState extends State<AddCategorySection> {
       _error = null;
     });
     try {
-      final req = http.MultipartRequest('POST', Uri.parse('https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/add-seeds-categories'));
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
+      final req = http.MultipartRequest(
+        'POST',
+        Uri.parse(
+          '$baseUrl/add-seeds-categories',
+        ),
+      );
       req.fields['name'] = name;
-      req.files.add(await http.MultipartFile.fromPath('image', _pickedImage!.path));
+      req.files.add(
+        await http.MultipartFile.fromPath('image', _pickedImage!.path),
+      );
       final res = await req.send();
       if (res.statusCode == 200) {
         widget.onSaved();
@@ -99,7 +110,10 @@ class _AddCategorySectionState extends State<AddCategorySection> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Color(0xFFF7941D), width: 2),
+                borderSide: const BorderSide(
+                  color: Color(0xFFF7941D),
+                  width: 2,
+                ),
               ),
             ),
           ),
@@ -117,19 +131,31 @@ class _AddCategorySectionState extends State<AddCategorySection> {
                 borderRadius: BorderRadius.circular(10),
                 color: Colors.grey.shade100,
               ),
-              child: _pickedImage == null
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Icon(Icons.photo_library, color: Colors.grey, size: 36),
-                        SizedBox(height: 8),
-                        Text("Tap to pick an image", style: TextStyle(color: Colors.grey)),
-                      ],
-                    )
-                  : ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.file(_pickedImage!, fit: BoxFit.cover, width: double.infinity),
-                    ),
+              child:
+                  _pickedImage == null
+                      ? Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Icon(
+                            Icons.photo_library,
+                            color: Colors.grey,
+                            size: 36,
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            "Tap to pick an image",
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ],
+                      )
+                      : ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.file(
+                          _pickedImage!,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        ),
+                      ),
             ),
           ),
 
@@ -137,13 +163,18 @@ class _AddCategorySectionState extends State<AddCategorySection> {
 
           // Error
           if (_error != null)
-            Text(_error!, style: const TextStyle(color: Colors.red, fontSize: 14)),
+            Text(
+              _error!,
+              style: const TextStyle(color: Colors.red, fontSize: 14),
+            ),
 
           const SizedBox(height: 12),
 
           // Buttons
           if (_isLoading)
-            const Center(child: CircularProgressIndicator(color: Color(0xFFF7941D)))
+            const Center(
+              child: CircularProgressIndicator(color: Color(0xFFF7941D)),
+            )
           else
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -152,7 +183,10 @@ class _AddCategorySectionState extends State<AddCategorySection> {
                   onPressed: _cancel,
                   child: const Text(
                     'Cancel',
-                    style: TextStyle(color: Color(0xFFF7941D), fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      color: Color(0xFFF7941D),
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -160,12 +194,20 @@ class _AddCategorySectionState extends State<AddCategorySection> {
                   onPressed: _save,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFF7941D),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 8,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                   child: const Text(
                     'Save',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],

@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:sand_valley/providers/app_state.dart';
 import 'package:sand_valley/widgets/Admin/add_fertilizer_type_section.dart';
 import 'package:sand_valley/widgets/Admin/fertilizertype_card.dart';
 
@@ -37,10 +39,10 @@ class _FertilizerTypeAdminPageState extends State<FertilizerTypeAdminPage> {
   Future<void> _fetchTypes() async {
     setState(() => _loading = true);
     try {
+      final baseUrl = Provider.of<AppState>(context, listen: false).baseUrl;
+
       final res = await http.get(
-        Uri.parse(
-          'https://sand-valey-flutter-app-backend-node.vercel.app/api/auth/get-fertilizer-type/$_fertId',
-        ),
+        Uri.parse('$baseUrl/get-fertilizer-type/$_fertId'),
       );
       if (res.statusCode == 200) {
         final body = json.decode(res.body)['data'] as Map<String, dynamic>;
@@ -197,7 +199,11 @@ class _FertilizerTypeAdminPageState extends State<FertilizerTypeAdminPage> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.local_florist, size: 40, color: Colors.grey),
+                              Icon(
+                                Icons.local_florist,
+                                size: 40,
+                                color: Colors.grey,
+                              ),
                               SizedBox(height: 8),
                               Text(
                                 'لا توجد أنواع حالياً',
